@@ -17,8 +17,8 @@ export default function AddProjectDialog({open, reloadProjects, handleClose}) {
   const [projectName, setProjectName] = useState("")
   const [githubRepositoryURL, setGithubRepositoryURL] = useState("")
   const [sonarRepositoryURL, setSonarRepositoryURL] = useState("")
-  const [isGithubAvailable, setIsGithubAvailable] = useState(false)
-  const [isSonarAvailable, setIsSonarAvailable] = useState(false)
+  const setIsGithubAvailable = useState(false)[1]
+  const setIsSonarAvailable = useState(false)[1]
   const jwtToken = localStorage.getItem("jwtToken")
 
   const createProject = () => {
@@ -44,7 +44,7 @@ export default function AddProjectDialog({open, reloadProjects, handleClose}) {
 
             Axios.post("http://localhost:9100/pvs-api/project", payload,
               {headers: {"Authorization": `${jwtToken}`}})
-              .then((response) => {
+              .then(() => {
                 reloadProjects()
                 handleClose()
               })
@@ -63,11 +63,11 @@ export default function AddProjectDialog({open, reloadProjects, handleClose}) {
   const checkGithubRepositoryURL = () => {
     return Axios.get(`http://localhost:9100/pvs-api/repository/github/check?url=${githubRepositoryURL}`,
       {headers: {"Authorization": `${jwtToken}`}})
-      .then((response) => {
+      .then(() => {
         setIsGithubAvailable(true);
         return true
       })
-      .catch((e) => {
+      .catch(() => {
         alert("github error")
         return false
       })
@@ -76,7 +76,7 @@ export default function AddProjectDialog({open, reloadProjects, handleClose}) {
   const checkSonarRepositoryURL = () => {
     return Axios.get(`http://localhost:9100/pvs-api/repository/sonar/check?url=${sonarRepositoryURL}`,
       {headers: {"Authorization": `${jwtToken}`}})
-      .then((response) => {
+      .then(() => {
         setIsSonarAvailable(true);
         return true
       })

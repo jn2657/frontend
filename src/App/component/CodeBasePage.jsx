@@ -58,7 +58,7 @@ function CodeBasePage(prop) {
       const query = githubRepo.url.split("github.com/")[1]
       Axios.post(`http://localhost:9100/pvs-api/github/commits/${query}`, "",
         {headers: {"Authorization": `${jwtToken}`}})
-        .then((response) => {
+        .then(() => {
           // todo need reafctor with async
           Axios.get(`http://localhost:9100/pvs-api/github/commits/${query}`,
             {headers: {"Authorization": `${jwtToken}`}})

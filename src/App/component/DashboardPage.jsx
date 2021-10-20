@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-function DashboardPage(props) {
+function DashboardPage() {
   const classes = useStyles()
 
   const [currentProject, setCurrentProject] = useState({})

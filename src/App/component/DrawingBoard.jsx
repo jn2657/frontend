@@ -84,7 +84,7 @@ export default function DrawingBoard(props) {
 
   return (
     <div className="App main" id={props.id}>
-      <Line data={data} options={options}/>
+      <Line data={data} options={options} type={""}/>
     </div>
   )
 }

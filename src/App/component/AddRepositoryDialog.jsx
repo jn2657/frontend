@@ -24,7 +24,7 @@ export default function AddRepositoryDialog({open, reloadProjects, handleClose, 
       }
       Axios.post(`http://localhost:9100/pvs-api/project/${projectId}/repository/${repoType}`, payload,
         {headers: {"Authorization": `${jwtToken}`}})
-        .then((response) => {
+        .then(() => {
           reloadProjects()
           handleClose()
         })
