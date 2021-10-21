@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import logo_p from '../../assets/p.png'
 import logo_v from '../../assets/v.png'
 import logo_s from '../../assets/s.png'

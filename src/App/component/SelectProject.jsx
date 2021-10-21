@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import Axios from 'axios';
 import {
@@ -64,7 +64,7 @@ function SelectProject({setCurrentProjectId}) {
 
       <div className={classes.root}>
         {projects.map(project =>
-          <ProjectAvatar size="large" project={project} reloadProjects={loadProjects}/>
+          <ProjectAvatar key={project.toString()} size="large" project={project} reloadProjects={loadProjects}/>
         )}
         <Card id="create-project-card" className={classes.createProjectCard}>
           <CardActionArea onClick={() => setAddRepoDialogOpen(true)}>

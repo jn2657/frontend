@@ -23,7 +23,9 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
-    "clsx": "^1.1.1"
+    "clsx": "^1.1.1",
+    "eslint": "^8.0.1",
+    "eslint-plugin-react": "^7.26.1"
   },
   "scripts": {
     "start": "react-scripts start",

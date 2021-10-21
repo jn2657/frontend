@@ -1,8 +1,7 @@
-import React from 'react'
 import Sidebar from './Sidebar'
 // - [ ] ::TODO:: NBN: this file Needs a Better Name.
 
-export default function ({children}) {
+export default function Container({children}) {
   return (
     <div>
       <Sidebar>
