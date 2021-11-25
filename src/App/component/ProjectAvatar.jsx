@@ -5,6 +5,7 @@ import {Box, CardActionArea, Avatar, CardActions, IconButton} from '@material-ui
 import GitHubIcon from '@material-ui/icons/GitHub';
 import FilterDramaIcon from '@material-ui/icons/FilterDrama';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
+import FilterDramaIcon from '@material-ui/icons/FilterDrama';
 import AddIcon from '@material-ui/icons/Add';
 import AddRepositoryDialog from './AddRepositoryDialog';
 import {connect} from 'react-redux'
@@ -43,13 +44,21 @@ function ProjectAvatar(props) {
 
   useEffect(() => {
     if (props.size === 'large') {
-      const getGithubRepo = props.project.repositoryDTOList.find(x => x.type === "github")
-      const getGitlabRepo = props.project.repositoryDTOList.find(x => x.type === "gitlab")
-      const getSonarRepo = props.project.repositoryDTOList.find(x => x.type === "sonar")
+      const githubRepo = props.project.repositoryDTOList.find(x => x.type === "github")
+      const gitlabRepo = props.project.repositoryDTOList.find(x => x.type === "gitlab")
+      const sonarRepo = props.project.repositoryDTOList.find(x => x.type === "sonar")
 
-      setHasGithubRepo(getGithubRepo !== undefined)
-      setHasGitlabRepo(getGitlabRepo !== undefined)
-      setHasSonarRepo(getSonarRepo !== undefined)
+      setHasGithubRepo(githubRepo !== undefined)
+      setHasGitlabRepo(gitlabRepo !== undefined)
+      setHasSonarRepo(sonarRepo !== undefined)
+
+      if (githubRepo !== undefined && gitlabRepo !== undefined) {
+        setWantedRepoType("sonar")
+      } else if (sonarRepo !== undefined && gitlabRepo !== undefined) {
+        setWantedRepoType("github")
+      } else if (sonarRepo !== undefined && githubRepo !== undefined) {
+        setWantedRepoType("gitlab")
+      }
     }
   }, [props.project])
 
@@ -102,7 +111,7 @@ function ProjectAvatar(props) {
             <GpsFixedIcon/>
           </IconButton>
           }
-          {(!hasGithubRepo || !hasGitlabRepo || !hasSonarRepo) &&
+          {(!hasGithubRepo || !hasSonarRepo || !hasGitlabRepo) &&
           <IconButton aria-label="Add Repository" onClick={showAddRepoDialog}>
             <AddIcon/>
           </IconButton>
