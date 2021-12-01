@@ -86,7 +86,7 @@ function CodeBasePage(prop) {
                 Axios.get(`http://localhost:9100/pvs-api/gitlab/commits/${query}`,
                 {headers: {"Authorization": `${jwtToken}`}})
                 .then((response) => {
-                    setCommitListData(prevArray => ([...prevArray, response.data]))
+                    setCommitListData(prevArray => ([...prevArray, ...response.data]))
                 })
                 .catch((e) => {
                   alert(e)
