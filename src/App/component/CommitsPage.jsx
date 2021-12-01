@@ -74,7 +74,7 @@ function CommitsPage(prop) {
             })
         })
         .catch((e) => {
-          alert(e.response.status)
+          alert(e)
           console.error(e)
         })
     }
@@ -90,7 +90,7 @@ function CommitsPage(prop) {
               Axios.get(`http://localhost:9100/pvs-api/gitlab/commits/${query}`,
               {headers: {"Authorization": `${jwtToken}`}})
               .then((response) => {
-                  setCommitListData(prevArray => ([...prevArray, response.data]))
+                  setCommitListData(previousArray =>[...previousArray, ...response.data])
               })
               .catch((e) => {
                 alert(e)
