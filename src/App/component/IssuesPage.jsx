@@ -80,8 +80,7 @@ function IssuesPage(prop) {
       Axios.get(`http://localhost:9100/pvs-api/gitlab/issues/${query}`,
       {headers: {"Authorization": `${jwtToken}`}})
       .then((response) => {
-          console.log(response.data)
-          setIssueListData(prevArray => ([...prevArray, response.data]))
+          setIssueListData(prevArray => ([...prevArray, ...response.data]))
       })
       .catch((e) => {
           alert(e);
