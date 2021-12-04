@@ -3,6 +3,7 @@ import {useHistory} from 'react-router-dom'
 import {makeStyles} from '@material-ui/core/styles'
 import {Box, CardActionArea, Avatar, CardActions, IconButton} from '@material-ui/core'
 import GitHubIcon from '@material-ui/icons/GitHub';
+import FilterDramaIcon from '@material-ui/icons/FilterDrama';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
 import AddIcon from '@material-ui/icons/Add';
 import AddRepositoryDialog from './AddRepositoryDialog';
@@ -36,23 +37,19 @@ function ProjectAvatar(props) {
 
 
   const [addRepoDialogOpen, setAddRepoDialogOpen] = useState(false)
-  const [wantedRepoType, setWantedRepoType] = useState("")
   const [hasGithubRepo, setHasGithubRepo] = useState(false)
+  const [hasGitlabRepo, setHasGitlabRepo] = useState(false)
   const [hasSonarRepo, setHasSonarRepo] = useState(false)
 
   useEffect(() => {
     if (props.size === 'large') {
-      const githubRepo = props.project.repositoryDTOList.find(x => x.type === "github")
-      const sonarRepo = props.project.repositoryDTOList.find(x => x.type === "sonar")
+      const getGithubRepo = props.project.repositoryDTOList.find(x => x.type === "github")
+      const getGitlabRepo = props.project.repositoryDTOList.find(x => x.type === "gitlab")
+      const getSonarRepo = props.project.repositoryDTOList.find(x => x.type === "sonar")
 
-      setHasGithubRepo(githubRepo !== undefined)
-      setHasSonarRepo(sonarRepo !== undefined)
-
-      if (githubRepo !== undefined) {
-        setWantedRepoType("sonar")
-      } else if (sonarRepo !== undefined) {
-        setWantedRepoType("github")
-      }
+      setHasGithubRepo(getGithubRepo !== undefined)
+      setHasGitlabRepo(getGitlabRepo !== undefined)
+      setHasSonarRepo(getSonarRepo !== undefined)
     }
   }, [props.project])
 
@@ -95,12 +92,17 @@ function ProjectAvatar(props) {
             <GitHubIcon/>
           </IconButton>
           }
+          {hasGitlabRepo &&
+          <IconButton aria-label="GitLab" onClick={goToCommit}>
+            <FilterDramaIcon/>
+          </IconButton>
+          }
           {hasSonarRepo &&
           <IconButton aria-label="SonarQube" onClick={goToCodeCoverage}>
             <GpsFixedIcon/>
           </IconButton>
           }
-          {(!hasGithubRepo || !hasSonarRepo) &&
+          {(!hasGithubRepo || !hasGitlabRepo || !hasSonarRepo) &&
           <IconButton aria-label="Add Repository" onClick={showAddRepoDialog}>
             <AddIcon/>
           </IconButton>
@@ -113,7 +115,6 @@ function ProjectAvatar(props) {
         reloadProjects={props.reloadProjects}
         handleClose={() => setAddRepoDialogOpen(false)}
         projectId={props.project.projectId}
-        repoType={wantedRepoType}
       />
     </div>
   )

@@ -7,47 +7,104 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  TextField
+  TextField,
+  Radio,
+  RadioGroup,
+  FormControl,
+  FormLabel,
+  FormControlLabel
 } from '@material-ui/core'
 
-export default function AddRepositoryDialog({open, reloadProjects, handleClose, projectId, repoType}) {
+import InputAdornment from '@material-ui/core/InputAdornment';
+import {SiGithub, SiSonarqube, SiGitlab} from 'react-icons/si'
+
+export default function AddRepositoryDialog({open, reloadProjects, handleClose, projectId}) {
+
   const [repositoryURL, setRepositoryURL] = useState("")
+  const [repoType, setRepoType] = useState("")
   const jwtToken = localStorage.getItem("jwtToken")
 
+  const [showDiv, setShowDiv] = useState(false)
+
   const addRepository = () => {
-    if (repositoryURL === "") {
+    let checker = []
+    if (repositoryURL.trim() === "") {
       alert("不準啦馬的>///<")
     } else {
-      let payload = {
-        projectId: projectId,
-        repositoryURL: repositoryURL
-      }
-      Axios.post(`http://localhost:9100/pvs-api/project/${projectId}/repository/${repoType}`, payload,
-        {headers: {"Authorization": `${jwtToken}`}})
-        .then(() => {
-          reloadProjects()
-          handleClose()
-        })
-        .catch((e) => {
-          alert(e.response.status)
-          console.error(e)
-        })
+
+      checker.push(checkRepositoryURL());
+
+      Promise.all(checker)
+        .then((response) => {
+          if (response.includes(false) === false) {
+            let payload = {
+              projectId,
+              repositoryURL
+            }
+
+            Axios.post(`http://localhost:9100/pvs-api/project/${projectId}/repository/${repoType}`, payload,
+              {headers: {"Authorization": `${jwtToken}`}})
+              .then(() => {
+                reloadProjects()
+                handleClose()
+              })
+              .catch((e) => {
+                alert(e.response.status)
+                console.error(e)
+              })
+          }
+        }).catch((e) => {
+        alert(e.response.status)
+        console.error(e)
+      })
     }
   }
 
-  useEffect(() => {
-    setRepositoryURL("")
-  }, [open])
+  const checkRepositoryURL = () => {
+    if (repoType === "github") {
+      return Axios.get(`http://localhost:9100/pvs-api/repository/github/check?url=${repositoryURL}`,
+        {headers: {"Authorization": `${jwtToken}`}})
+        .then(() => {
+          return true
+        })
+        .catch(() => {
+          alert("github error")
+          return false
+        })
+    }
+    if (repoType === "gitlab") {
+      return Axios.get(`http://localhost:9100/pvs-api/repository/gitlab/check?url=${repositoryURL}`,
+        {headers: {"Authorization": `${jwtToken}`}})
+        .then(() => {
+          return true
+        })
+        .catch(() => {
+          alert("gitlab error")
+          return false
+        })
+    }
+    if (repoType === "sonar") {
+      return Axios.get(`http://localhost:9100/pvs-api/repository/sonar/check?url=${repositoryURL}`,
+      {headers: {"Authorization": `${jwtToken}`}})
+      .then(() => {
+        return true
+      })
+      .catch((e) => {
+        alert("sonar error")
+        console.error(e)
+        return false
+      })
+    }
+  }
 
-  return (
-    <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-      <DialogTitle id="form-dialog-title">Add Repository</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          {repoType === "github" ?
-            "To add a GitHub repository, please enter the repository URL here." :
-            "To add a SonarQube repository, please enter the repository URL here."}
-        </DialogContentText>
+  const selected = (e) => {
+    setRepoType(e.target.value)
+    setShowDiv(e.target.checked)
+  }
+
+  const InputDiv = () => {
+    return(
+      <div>
         <TextField
           margin="dense"
           id="RepositoryURL"
@@ -56,8 +113,59 @@ export default function AddRepositoryDialog({open, reloadProjects, handleClose, 
           fullWidth
           onChange={(e) => {
             setRepositoryURL(e.target.value)
+            setRepoType("github")
+          }}
+          required
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                {repoType === "github" &&
+                <SiGithub />
+                }
+                {repoType === "gitlab" &&
+                <SiGitlab />
+                }
+                {repoType === "sonar" &&
+                <SiSonarqube />
+                }
+              </InputAdornment>
+            ),
           }}
         />
+      </div>
+    )
+  }
+
+  useEffect(() => {
+    setRepositoryURL("")
+    setRepoType("")
+    setShowDiv(false)
+  }, [open])
+
+  return (
+    <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+      <DialogTitle id="form-dialog-title">Add Repository</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+            To add a repository, please select a repository type and enter the repository URL.
+        </DialogContentText>
+        <FormControl component="fieldset">
+          <FormLabel component="legend" />
+            <RadioGroup row aria-label="repositoryType" name="row-radio-buttons-group">
+              <FormControlLabel value="github" control={<Radio />} onChange={selected} label="GitHub" />
+              <FormControlLabel value="gitlab" control={<Radio />} onClick={selected} label="GitLab" />
+              <FormControlLabel value="sonar" control={<Radio />} onClick={selected} label="SonarQube" />
+              <FormControlLabel
+                value="disabled"
+                disabled
+                control={<Radio />}
+                label="other"
+              />
+            </RadioGroup>
+        </FormControl>
+        <div>
+            {showDiv ? <InputDiv /> : null}
+        </div>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} color="secondary">
