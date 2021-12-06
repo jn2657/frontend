@@ -23,10 +23,14 @@ specifiers:
   react-router-dom: ^5.3.0
   react-scripts: ^4.0.3
 <<<<<<< HEAD
+<<<<<<< HEAD
   react-trello: 2.2.11
 =======
   react-trello: ^2.2.11
 >>>>>>> add reload button and optimize the code
+=======
+  react-trello: 2.2.11
+>>>>>>> add trello board
   redux: ^4.1.1
 
 dependencies:
