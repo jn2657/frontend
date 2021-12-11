@@ -1,20 +1,10 @@
-<<<<<<< HEAD
 import {useEffect, useState} from 'react'
 import {makeStyles} from '@material-ui/core/styles'
 import Axios from 'axios'
 
+import data from '../../data.json'
 import Board from "react-trello";
 import { createTranslate } from 'react-trello'
-=======
-//import {useEffect, useState} from 'react'
-import {makeStyles} from '@material-ui/core/styles'
-//import {Backdrop, CircularProgress, MenuItem, Select} from '@material-ui/core'
-//import {connect} from 'react-redux'
-//import {Redirect} from 'react-router-dom'
-
-import data from "../../data.json";
-import Board from "react-trello";
->>>>>>> add trello board
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,7 +23,6 @@ const useStyles = makeStyles((theme) => ({
 function TrelloBoardPage() {
 
   const classes = useStyles()
-<<<<<<< HEAD
   const [boardData, setBoardData] = useState({})
   const [hasBoardData, setHasBoardData] = useState(false)
   const [currentProject, setCurrentProject] = useState({})
@@ -110,26 +99,9 @@ function TrelloBoardPage() {
           t={createTranslate(TEXTS)}
         />
         }
-=======
-  return (
-    <div style={{marginLeft: "10px"}}>
-      <div className={classes.root}>
-        <Board
-          data={data}
-          draggable
-          editable
-          canAddLanes
-          addLaneTitle="Add Column"
-          addCardTitle="Add Item"
-        />
->>>>>>> add trello board
       </div>
     </div>
   );
 }
 
-<<<<<<< HEAD
 export default TrelloBoardPage;
-=======
-export default TrelloBoardPage;
->>>>>>> add trello board
