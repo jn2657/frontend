@@ -6,6 +6,7 @@ import GitHubIcon from '@material-ui/icons/GitHub';
 import FilterDramaIcon from '@material-ui/icons/FilterDrama';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
 import FilterDramaIcon from '@material-ui/icons/FilterDrama';
+import DashboardIcon from '@material-ui/icons/Dashboard';
 import AddIcon from '@material-ui/icons/Add';
 import AddRepositoryDialog from './AddRepositoryDialog';
 import {connect} from 'react-redux'
@@ -36,29 +37,23 @@ function ProjectAvatar(props) {
   const classes = useStyles()
   const history = useHistory()
 
-
   const [addRepoDialogOpen, setAddRepoDialogOpen] = useState(false)
   const [hasGithubRepo, setHasGithubRepo] = useState(false)
   const [hasGitlabRepo, setHasGitlabRepo] = useState(false)
   const [hasSonarRepo, setHasSonarRepo] = useState(false)
+  const [hasTrelloBoard, setHasTrelloBoard] = useState(false)
 
   useEffect(() => {
     if (props.size === 'large') {
       const githubRepo = props.project.repositoryDTOList.find(x => x.type === "github")
       const gitlabRepo = props.project.repositoryDTOList.find(x => x.type === "gitlab")
       const sonarRepo = props.project.repositoryDTOList.find(x => x.type === "sonar")
+      const trelloBoard = props.project.repositoryDTOList.find(x => x.type === "trello")
 
       setHasGithubRepo(githubRepo !== undefined)
       setHasGitlabRepo(gitlabRepo !== undefined)
       setHasSonarRepo(sonarRepo !== undefined)
-
-      if (githubRepo !== undefined && gitlabRepo !== undefined) {
-        setWantedRepoType("sonar")
-      } else if (sonarRepo !== undefined && gitlabRepo !== undefined) {
-        setWantedRepoType("github")
-      } else if (sonarRepo !== undefined && githubRepo !== undefined) {
-        setWantedRepoType("gitlab")
-      }
+      setHasTrelloBoard(trelloBoard !== undefined)
     }
   }, [props.project])
 
@@ -80,8 +75,13 @@ function ProjectAvatar(props) {
     history.push("/dashboard")
   }
 
-  const showAddRepoDialog = () => {
+  const goToTrelloBoard = () => {
+    localStorage.setItem("projectId", props.project.projectId)
+    props.setCurrentProjectId(props.project.projectId)
+    history.push("/trello_board")
+  }
 
+  const showAddRepoDialog = () => {
     setAddRepoDialogOpen(true)
   }
 
@@ -94,6 +94,7 @@ function ProjectAvatar(props) {
           <p style={{"textAlign": "center"}}>{props.project.projectName}</p>
           }
         </CardActionArea>
+
         {props.size === 'large' &&
         <CardActions disableSpacing>
           {hasGithubRepo &&
@@ -101,21 +102,28 @@ function ProjectAvatar(props) {
             <GitHubIcon/>
           </IconButton>
           }
+
           {hasGitlabRepo &&
           <IconButton aria-label="GitLab" onClick={goToCommit}>
             <FilterDramaIcon/>
           </IconButton>
           }
+
           {hasSonarRepo &&
           <IconButton aria-label="SonarQube" onClick={goToCodeCoverage}>
             <GpsFixedIcon/>
           </IconButton>
           }
-          {(!hasGithubRepo || !hasSonarRepo || !hasGitlabRepo) &&
+
+          {hasTrelloBoard &&
+          <IconButton aria-label="Trello" onClick={goToTrelloBoard}>
+            <DashboardIcon/>
+          </IconButton>
+          }
+
           <IconButton aria-label="Add Repository" onClick={showAddRepoDialog}>
             <AddIcon/>
           </IconButton>
-          }
         </CardActions>
         }
       </Box>
