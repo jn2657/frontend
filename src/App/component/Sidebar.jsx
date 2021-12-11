@@ -319,7 +319,7 @@ function Sidebar(prop) {
 
           {/* trello metrics UI button */}
           {currentProject &&
-          currentProject.repositoryDTOList.find(x => x.type === "gitlab" || x.type === "github") &&
+          currentProject.repositoryDTOList.find(x => x.type === "trello") &&
           <div>
             <ListItem button onClick={() => {
               setTrelloMenuOpen(!trelloMenuOpen)
@@ -394,7 +394,7 @@ function Sidebar(prop) {
   }
 
   const goToTrelloBoard = () => {
-      history.push("/trello_board")
+    history.push("/trello_board")
   }
 
   const jwtToken = localStorage.getItem("jwtToken")

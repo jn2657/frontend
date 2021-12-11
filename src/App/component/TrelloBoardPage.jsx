@@ -1,11 +1,10 @@
-//import {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {makeStyles} from '@material-ui/core/styles'
-//import {Backdrop, CircularProgress, MenuItem, Select} from '@material-ui/core'
-//import {connect} from 'react-redux'
-//import {Redirect} from 'react-router-dom'
+import Axios from 'axios'
 
-import data from "../../data.json";
+import data from '../../data.json'
 import Board from "react-trello";
+import { createTranslate } from 'react-trello'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,6 +23,70 @@ const useStyles = makeStyles((theme) => ({
 function TrelloBoardPage() {
 
   const classes = useStyles()
+  const [boardData, setBoardData] = useState({})
+  const [currentProject, setCurrentProject] = useState({})
+
+  const projectId = localStorage.getItem("projectId")
+  const jwtToken = localStorage.getItem("jwtToken")
+
+  useEffect(() => {
+    Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
+      {headers: {"Authorization": `${jwtToken}`}})
+      .then((response) => {
+        setCurrentProject(response.data)
+      })
+      .catch((e) => {
+        alert(e.response.status)
+        console.error(e)
+      })
+  }, [])
+
+  const getTrelloData = () => {
+    const trelloBoard = currentProject.repositoryDTOList.find(repo => repo.type === 'trello')
+    Axios.get(`http://localhost:9100/pvs-api/repository/trello/check?url=${trelloBoard.url}` ,
+      {headers: {"Authorization": `${jwtToken}`}})
+      .then(
+        Axios.get(`http://localhost:9100/pvs-api/trello/board?url=${trelloBoard.url}` ,
+          {headers: {"Authorization": `${jwtToken}`}})
+          .then((response) => {
+            setBoardData(response.data)
+            console.log(boardData)
+          })
+          .catch((e) => {
+            alert(e.response.status)
+            console.error(e)
+          })
+      )
+      .catch((e) => {
+        alert(e.response.status)
+        console.error(e)
+      })
+  }
+
+  const TEXTS = {
+    "Add another lane": "NEW LANE",
+    "Click to add card": "Click to add card",
+    "Delete lane": "Delete lane",
+    "Lane actions": "Lane actions",
+    "button": {
+      "Add lane": "Add lane",
+      "Add card": "ADD CARD",
+      "Cancel": "Cancel"
+    },
+    "placeholder": {
+      "title": "title",
+      "description": "description",
+      "label": "label"
+    }
+  }
+
+  useEffect(() => {
+    if (Object.keys(currentProject).length !== 0) {
+      getTrelloData()
+//       writeDataToJsonFile()
+    }
+  }, [currentProject])
+
   return (
     <div style={{marginLeft: "10px"}}>
       <div className={classes.root}>
@@ -32,8 +95,7 @@ function TrelloBoardPage() {
           draggable
           editable
           canAddLanes
-          addLaneTitle="Add Column"
-          addCardTitle="Add Item"
+          t={createTranslate(TEXTS)}
         />
       </div>
     </div>
