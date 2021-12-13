@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react'
 import {makeStyles} from '@material-ui/core/styles'
 import Axios from 'axios'
 
-import data from '../../data.json'
+// import data from '../../data.json'
 import Board from "react-trello";
 import { createTranslate } from 'react-trello'
 
@@ -24,6 +24,7 @@ function TrelloBoardPage() {
 
   const classes = useStyles()
   const [boardData, setBoardData] = useState({})
+  const [hasBoardData, setHasBoardData] = useState(false)
   const [currentProject, setCurrentProject] = useState({})
 
   const projectId = localStorage.getItem("projectId")
@@ -43,24 +44,28 @@ function TrelloBoardPage() {
 
   const getTrelloData = () => {
     const trelloBoard = currentProject.repositoryDTOList.find(repo => repo.type === 'trello')
-    Axios.get(`http://localhost:9100/pvs-api/repository/trello/check?url=${trelloBoard.url}` ,
-      {headers: {"Authorization": `${jwtToken}`}})
-      .then(
-        Axios.get(`http://localhost:9100/pvs-api/trello/board?url=${trelloBoard.url}` ,
-          {headers: {"Authorization": `${jwtToken}`}})
-          .then((response) => {
-            setBoardData(response.data)
-            console.log(boardData)
-          })
-          .catch((e) => {
-            alert(e.response.status)
-            console.error(e)
-          })
-      )
-      .catch((e) => {
-        alert(e.response.status)
-        console.error(e)
-      })
+    if (trelloBoard !== undefined) {
+      Axios.get(`http://localhost:9100/pvs-api/repository/trello/check?url=${trelloBoard.url}` ,
+        {headers: {"Authorization": `${jwtToken}`}})
+        .then(
+          Axios.get(`http://localhost:9100/pvs-api/trello/board?url=${trelloBoard.url}` ,
+            {headers: {"Authorization": `${jwtToken}`}})
+            .then((response) => {
+              setBoardData(response.data)
+              setHasBoardData(true)
+              console.log(boardData)
+            })
+            .catch((e) => {
+              alert(e.response.status)
+              console.error(e)
+            })
+        )
+        .catch((e) => {
+          alert(e.response.status)
+          console.error(e)
+        })
+    }
+
   }
 
   const TEXTS = {
@@ -83,20 +88,19 @@ function TrelloBoardPage() {
   useEffect(() => {
     if (Object.keys(currentProject).length !== 0) {
       getTrelloData()
-//       writeDataToJsonFile()
     }
   }, [currentProject])
 
   return (
     <div style={{marginLeft: "10px"}}>
       <div className={classes.root}>
+        {hasBoardData &&
         <Board
-          data={data}
-          draggable
-          editable
+          data={boardData}
           canAddLanes
           t={createTranslate(TEXTS)}
         />
+        }
       </div>
     </div>
   );
