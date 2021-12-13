@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react'
 import {makeStyles} from '@material-ui/core/styles'
 import Axios from 'axios'
 
-import data from '../../data.json'
+// import data from '../../data.json'
 import Board from "react-trello";
 import { createTranslate } from 'react-trello'
 
