@@ -5,7 +5,6 @@ import {Box, CardActionArea, Avatar, CardActions, IconButton} from '@material-ui
 import GitHubIcon from '@material-ui/icons/GitHub';
 import FilterDramaIcon from '@material-ui/icons/FilterDrama';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
-import FilterDramaIcon from '@material-ui/icons/FilterDrama';
 import AddIcon from '@material-ui/icons/Add';
 import AddRepositoryDialog from './AddRepositoryDialog';
 import {connect} from 'react-redux'
