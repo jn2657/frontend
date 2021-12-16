@@ -42,13 +42,13 @@ function ProjectAvatar(props) {
 
   useEffect(() => {
     if (props.size === 'large') {
-      const githubRepo = props.project.repositoryDTOList.find(x => x.type === "github")
-      const gitlabRepo = props.project.repositoryDTOList.find(x => x.type === "gitlab")
-      const sonarRepo = props.project.repositoryDTOList.find(x => x.type === "sonar")
+      const getGithubRepo = props.project.repositoryDTOList.find(x => x.type === "github")
+      const getGitlabRepo = props.project.repositoryDTOList.find(x => x.type === "gitlab")
+      const getSonarRepo = props.project.repositoryDTOList.find(x => x.type === "sonar")
 
-      setHasGithubRepo(githubRepo !== undefined)
-      setHasGitlabRepo(gitlabRepo !== undefined)
-      setHasSonarRepo(sonarRepo !== undefined)
+      setHasGithubRepo(getGithubRepo !== undefined)
+      setHasGitlabRepo(getGitlabRepo !== undefined)
+      setHasSonarRepo(getSonarRepo !== undefined)
     }
   }, [props.project])
 
@@ -100,7 +100,7 @@ function ProjectAvatar(props) {
             <GpsFixedIcon/>
           </IconButton>
           }
-          {(!hasGithubRepo || !hasSonarRepo || !hasGitlabRepo) &&
+          {(!hasGithubRepo || !hasGitlabRepo || !hasSonarRepo) &&
           <IconButton aria-label="Add Repository" onClick={showAddRepoDialog}>
             <AddIcon/>
           </IconButton>

@@ -57,7 +57,7 @@ function CommitsPage(prop) {
 
   const getCommitFromGithub = () => {
     const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
-    if (githubRepo != null){
+    if (githubRepo !== undefined){
         const query = githubRepo.url.split("github.com/")[1]
         Axios.post(`http://localhost:9100/pvs-api/github/commits/${query}`, "",
         {headers: {"Authorization": `${jwtToken}`}})
@@ -82,7 +82,7 @@ function CommitsPage(prop) {
 
   const getCommitFromGitlab = () => {
       const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
-      if(gitlabRepo != null){
+      if(gitlabRepo !== undefined){
           const query = gitlabRepo.url.split("gitlab.com/")[1]
           Axios.post(`http://localhost:9100/pvs-api/gitlab/commits/${query}`, "",
           {headers: {"Authorization": `${jwtToken}`}})

@@ -72,7 +72,7 @@ function IssuesPage(prop) {
 
   const getIssueFromGitlab = () => {
     const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
-    if (gitlabRepo != null) {
+    if (gitlabRepo !== undefined) {
       const query = gitlabRepo.url.split("gitlab.com/")[1]
 
       // todo need refactor with async
@@ -86,7 +86,6 @@ function IssuesPage(prop) {
           console.error(e)
       })
     }
-
   }
 
   useEffect(() => {
