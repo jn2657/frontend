@@ -5,7 +5,6 @@ import {Box, CardActionArea, Avatar, CardActions, IconButton} from '@material-ui
 import GitHubIcon from '@material-ui/icons/GitHub';
 import FilterDramaIcon from '@material-ui/icons/FilterDrama';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
-import FilterDramaIcon from '@material-ui/icons/FilterDrama';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import AddIcon from '@material-ui/icons/Add';
 import AddRepositoryDialog from './AddRepositoryDialog';
@@ -45,15 +44,15 @@ function ProjectAvatar(props) {
 
   useEffect(() => {
     if (props.size === 'large') {
-      const githubRepo = props.project.repositoryDTOList.find(x => x.type === "github")
-      const gitlabRepo = props.project.repositoryDTOList.find(x => x.type === "gitlab")
-      const sonarRepo = props.project.repositoryDTOList.find(x => x.type === "sonar")
-      const trelloBoard = props.project.repositoryDTOList.find(x => x.type === "trello")
+      const getGithubRepo = props.project.repositoryDTOList.find(x => x.type === "github")
+      const getGitlabRepo = props.project.repositoryDTOList.find(x => x.type === "gitlab")
+      const getSonarRepo = props.project.repositoryDTOList.find(x => x.type === "sonar")
+      const getTrelloBoard = props.project.repositoryDTOList.find(x => x.type === "trello")
 
-      setHasGithubRepo(githubRepo !== undefined)
-      setHasGitlabRepo(gitlabRepo !== undefined)
-      setHasSonarRepo(sonarRepo !== undefined)
-      setHasTrelloBoard(trelloBoard !== undefined)
+      setHasGithubRepo(getGithubRepo !== undefined)
+      setHasGitlabRepo(getGitlabRepo !== undefined)
+      setHasSonarRepo(getSonarRepo !== undefined)
+      setHasTrelloBoard(getTrelloBoard !== undefined)
     }
   }, [props.project])
 

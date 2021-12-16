@@ -143,22 +143,6 @@ export default function AddRepositoryDialog({open, reloadProjects, handleClose, 
                 {repoType === "sonar" &&
                 <SiSonarqube />
                 }
-              </InputAdornment>
-            ),
-          }}
-          required
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                {repoType === "github" &&
-                <SiGithub />
-                }
-                {repoType === "gitlab" &&
-                <SiGitlab />
-                }
-                {repoType === "sonar" &&
-                <SiSonarqube />
-                }
                 {repoType === "trello" &&
                 <SiTrello />
                 }
