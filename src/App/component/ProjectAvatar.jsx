@@ -85,26 +85,29 @@ function ProjectAvatar(props) {
         </CardActionArea>
         {props.size === 'large' &&
         <CardActions disableSpacing>
+
           {hasGithubRepo &&
           <IconButton aria-label="GitHub" onClick={goToCommit}>
             <GitHubIcon/>
           </IconButton>
           }
+
           {hasGitlabRepo &&
           <IconButton aria-label="GitLab" onClick={goToCommit}>
             <FilterDramaIcon/>
           </IconButton>
           }
+
           {hasSonarRepo &&
           <IconButton aria-label="SonarQube" onClick={goToCodeCoverage}>
             <GpsFixedIcon/>
           </IconButton>
           }
-          {(!hasGithubRepo || !hasGitlabRepo || !hasSonarRepo) &&
+
           <IconButton aria-label="Add Repository" onClick={showAddRepoDialog}>
             <AddIcon/>
           </IconButton>
-          }
+
         </CardActions>
         }
       </Box>
