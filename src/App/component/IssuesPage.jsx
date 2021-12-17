@@ -52,24 +52,48 @@ function IssuesPage(prop) {
       })
   }, [])
 
-  useEffect(() => {
-    if (Object.keys(currentProject).length !== 0) {
-      handleToggle()
-      const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
+  const getIssueFromGitHub = () => {
+    const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
+    if (githubRepo !== undefined) {
       const query = githubRepo.url.split("github.com/")[1]
 
       // todo need reafctor with async
       Axios.get(`http://localhost:9100/pvs-api/github/issues/${query}`,
-        {headers: {"Authorization": `${jwtToken}`}})
-        .then((response) => {
-          console.log(response.data)
-          setIssueListData(response.data)
-          handleClose()
-        })
-        .catch((e) => {
-          alert(e.response.status);
+      {headers: {"Authorization": `${jwtToken}`}})
+      .then((response) => {
+        setIssueListData(response.data)
+      })
+      .catch((e) => {
+        alert(e);
+        console.error(e)
+      })
+    }
+  }
+
+  const getIssueFromGitlab = () => {
+    const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
+    if (gitlabRepo !== undefined) {
+      const query = gitlabRepo.url.split("gitlab.com/")[1]
+
+      // todo need refactor with async
+      Axios.get(`http://localhost:9100/pvs-api/gitlab/issues/${query}`,
+      {headers: {"Authorization": `${jwtToken}`}})
+      .then((response) => {
+          setIssueListData(prevArray => ([...prevArray, ...response.data]))
+      })
+      .catch((e) => {
+          alert(e);
           console.error(e)
-        })
+      })
+    }
+  }
+
+  useEffect(() => {
+    if (Object.keys(currentProject).length !== 0) {
+      handleToggle()
+      getIssueFromGitHub()
+      getIssueFromGitlab()
+      handleClose()
     }
   }, [currentProject, prop.startMonth, prop.endMonth])
 
@@ -98,7 +122,6 @@ function IssuesPage(prop) {
         chartDataset.data.closed.push(index === -1 ? issueListData.length : index)
       }
     }
-    console.log(chartDataset)
     setDataForIssueChart(chartDataset)
   }, [issueListData])
 

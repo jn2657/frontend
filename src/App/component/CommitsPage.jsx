@@ -55,20 +55,18 @@ function CommitsPage(prop) {
       })
   }, [])
 
-  useEffect(() => {
-    if (Object.keys(currentProject).length !== 0) {
-      handleToggle()
-      const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
-      const query = githubRepo.url.split("github.com/")[1]
-      Axios.post(`http://localhost:9100/pvs-api/github/commits/${query}`, "",
+  const getCommitFromGithub = () => {
+    const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
+    if (githubRepo !== undefined){
+        const query = githubRepo.url.split("github.com/")[1]
+        Axios.post(`http://localhost:9100/pvs-api/github/commits/${query}`, "",
         {headers: {"Authorization": `${jwtToken}`}})
         .then(() => {
-          // todo need refactor with async
-          Axios.get(`http://localhost:9100/pvs-api/github/commits/${query}`,
+            // todo need refactor with async
+            Axios.get(`http://localhost:9100/pvs-api/github/commits/${query}`,
             {headers: {"Authorization": `${jwtToken}`}})
             .then((response) => {
-              setCommitListData(response.data)
-              handleClose()
+                setCommitListData(response.data)
             })
             .catch((e) => {
               alert(e.response.status)
@@ -76,9 +74,43 @@ function CommitsPage(prop) {
             })
         })
         .catch((e) => {
-          alert(e.response.status)
+          alert(e)
           console.error(e)
         })
+    }
+  }
+
+  const getCommitFromGitlab = () => {
+      const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
+      if(gitlabRepo !== undefined){
+          const query = gitlabRepo.url.split("gitlab.com/")[1]
+          Axios.post(`http://localhost:9100/pvs-api/gitlab/commits/${query}`, "",
+          {headers: {"Authorization": `${jwtToken}`}})
+          .then(() => {
+              Axios.get(`http://localhost:9100/pvs-api/gitlab/commits/${query}`,
+              {headers: {"Authorization": `${jwtToken}`}})
+              .then((response) => {
+                  setCommitListData(previousArray =>[...previousArray, ...response.data])
+              })
+              .catch((e) => {
+                alert(e)
+                console.error(e)
+              })
+          })
+          .catch((e) => {
+            alert(e.response.status)
+            console.error(e)
+          })
+      }
+    }
+
+
+  useEffect(() => {
+    if (Object.keys(currentProject).length !== 0) {
+      handleToggle()
+      getCommitFromGithub()
+      getCommitFromGitlab()
+      handleClose()
     }
   }, [currentProject, prop.startMonth, prop.endMonth])
 
@@ -133,6 +165,7 @@ function CommitsPage(prop) {
     )
   }
 
+  //return commit charts
   return (
     <div style={{marginLeft: "10px"}}>
       <Backdrop className={classes.backdrop} open={open}>

@@ -51,30 +51,61 @@ function CodeBasePage(prop) {
       })
   }, [])
 
-  useEffect(() => {
-    if (Object.keys(currentProject).length !== 0) {
-      handleToggle()
+  const getCommitFromGithub = () => {
       const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
-      const query = githubRepo.url.split("github.com/")[1]
-      Axios.post(`http://localhost:9100/pvs-api/github/commits/${query}`, "",
-        {headers: {"Authorization": `${jwtToken}`}})
-        .then(() => {
-          // todo need reafctor with async
-          Axios.get(`http://localhost:9100/pvs-api/github/commits/${query}`,
+      if (githubRepo !== undefined){
+          const query = githubRepo.url.split("github.com/")[1]
+          Axios.post(`http://localhost:9100/pvs-api/github/commits/${query}`, "",
+          {headers: {"Authorization": `${jwtToken}`}})
+          .then(() => {
+              // todo need refactor with async
+              Axios.get(`http://localhost:9100/pvs-api/github/commits/${query}`,
+              {headers: {"Authorization": `${jwtToken}`}})
+              .then((response) => {
+                  setCommitListData(response.data)
+              })
+              .catch((e) => {
+                alert(e.response.status)
+                console.error(e)
+              })
+          })
+          .catch((e) => {
+            alert(e.response.status)
+            console.error(e)
+          })
+      }
+    }
+
+    const getCommitFromGitlab = () => {
+        const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
+        if(gitlabRepo !== undefined){
+            const query = gitlabRepo.url.split("gitlab.com/")[1]
+            Axios.post(`http://localhost:9100/pvs-api/gitlab/commits/${query}`, "",
             {headers: {"Authorization": `${jwtToken}`}})
-            .then((response) => {
-              setCommitListData(response.data)
-              handleClose()
+            .then(() => {
+                Axios.get(`http://localhost:9100/pvs-api/gitlab/commits/${query}`,
+                {headers: {"Authorization": `${jwtToken}`}})
+                .then((response) => {
+                    setCommitListData(prevArray => ([...prevArray, ...response.data]))
+                })
+                .catch((e) => {
+                  alert(e)
+                  console.error(e)
+                })
             })
             .catch((e) => {
               alert(e.response.status)
               console.error(e)
             })
-        })
-        .catch((e) => {
-          alert(e.response.status)
-          console.error(e)
-        })
+        }
+      }
+
+  useEffect(() => {
+    if (Object.keys(currentProject).length !== 0) {
+      handleToggle()
+      getCommitFromGithub()
+      getCommitFromGitlab()
+      handleClose()
     }
   }, [currentProject, prop.startMonth, prop.endMonth])
 
