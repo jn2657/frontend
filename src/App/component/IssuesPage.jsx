@@ -7,7 +7,6 @@ import moment from 'moment'
 import {Backdrop, CircularProgress} from '@material-ui/core'
 import {connect} from 'react-redux';
 
-
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
@@ -15,6 +14,7 @@ const useStyles = makeStyles((theme) => ({
       margin: theme.spacing(1),
     },
     minWidth: '30px',
+    alignItems: 'center'
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,

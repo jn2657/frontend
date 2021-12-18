@@ -7,7 +7,7 @@ import moment from 'moment'
 import {Backdrop, CircularProgress, MenuItem, Select} from '@material-ui/core'
 import {connect} from 'react-redux'
 import {Redirect} from 'react-router-dom'
-import { Button } from 'react-bootstrap';
+import { Button } from 'react-bootstrap'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -21,6 +21,16 @@ const useStyles = makeStyles((theme) => ({
     zIndex: theme.zIndex.drawer + 1,
     color: '#fff',
   },
+  buttonContainer: {
+    display: 'flex',
+    '& > *': {
+      margin: theme.spacing(1),
+    },
+    minWidth: '30px',
+    alignItems: 'center',
+    width:"67%",
+    justifyContent: "space-between",
+  }
 }))
 
 function CommitsPage(prop) {
@@ -137,13 +147,13 @@ function CommitsPage(prop) {
 
   useEffect(() => {
     if (isLoading) {
-      const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
       const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
-      if (gitlabRepo !== undefined) {
-        getCommitFromGitlab()
-      }
+      const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
       if (githubRepo !== undefined) {
         getCommitFromGithub()
+      }
+      if (gitlabRepo !== undefined) {
+        getCommitFromGitlab()
       }
     }
   }, [isLoading]);
@@ -205,23 +215,24 @@ function CommitsPage(prop) {
       <Backdrop className={classes.backdrop} open={open}>
         <CircularProgress color="inherit"/>
       </Backdrop>
-      <div className={classes.root}>
+      <div className={classes.buttonContainer}>
+        <span style={{display:"flex", alignItems:"center"}}>
         <ProjectAvatar
           size="small"
           project={currentProject}
         />
-        <p>
+        <p style={{margin: "0 1em"}}>
           <h2>{currentProject ? currentProject.projectName : ""}</h2>
         </p>
+        </span>
+        <Button
+          disabled={isLoading}
+          onClick={!isLoading ? handleClick : null}
+        >
+          {isLoading ? 'Loading…' : 'reload commits'}
+        </Button>
       </div>
-      <Button
-        variant="primary"
-        size="lg"
-        disabled={isLoading}
-        onClick={!isLoading ? handleClick : null}
-      >
-        {isLoading ? 'Loading…' : 'reload commits'}
-      </Button>
+
       <div className={classes.root}>
         <div style={{width: "67%"}}>
           <div>
