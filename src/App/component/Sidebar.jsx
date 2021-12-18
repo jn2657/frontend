@@ -165,6 +165,7 @@ function Sidebar(prop) {
         {prop.currentProjectId !== 0 &&
         <div>
 
+          {/* back to select page UI button */}
           <ListItem button onClick={goToSelect}>
             <ListItemIcon>
               <ArrowBack/>
@@ -172,7 +173,7 @@ function Sidebar(prop) {
             <ListItemText primary="Select"/>
           </ListItem>
 
-
+          {/* dashboard UI button */}
           <Divider className={classes.divider}/>
           <ListItem button onClick={goToDashBoard}>
             <ListItemIcon>
