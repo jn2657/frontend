@@ -96,6 +96,7 @@ function ProjectAvatar(props) {
 
         {props.size === 'large' &&
         <CardActions disableSpacing>
+
           {hasGithubRepo &&
           <IconButton aria-label="GitHub" onClick={goToCommit}>
             <GitHubIcon/>
@@ -123,6 +124,7 @@ function ProjectAvatar(props) {
           <IconButton aria-label="Add Repository" onClick={showAddRepoDialog}>
             <AddIcon/>
           </IconButton>
+
         </CardActions>
         }
       </Box>

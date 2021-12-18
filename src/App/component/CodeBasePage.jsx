@@ -144,7 +144,6 @@ function CodeBasePage(prop) {
         />
         <p>
           <h2>{currentProject.projectName}</h2>
-
         </p>
       </div>
       <div className={classes.root}>

@@ -61,7 +61,6 @@ function IssuesPage(prop) {
       Axios.get(`http://localhost:9100/pvs-api/github/issues/${query}`,
       {headers: {"Authorization": `${jwtToken}`}})
       .then((response) => {
-        console.log(response.data)
         setIssueListData(response.data)
       })
       .catch((e) => {
@@ -87,7 +86,6 @@ function IssuesPage(prop) {
           console.error(e)
       })
     }
-
   }
 
   useEffect(() => {
@@ -124,7 +122,6 @@ function IssuesPage(prop) {
         chartDataset.data.closed.push(index === -1 ? issueListData.length : index)
       }
     }
-    console.log(chartDataset)
     setDataForIssueChart(chartDataset)
   }, [issueListData])
 
