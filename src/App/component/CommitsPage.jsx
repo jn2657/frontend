@@ -170,7 +170,6 @@ function CommitsPage(prop) {
     }
 
     setDataForTeamCommitChart(chartDataset)
-    console.log(chartDataset)
   }, [commitListData, prop.startMonth, prop.endMonth])
 
   useEffect(() => {

@@ -46,26 +46,24 @@ function TrelloBoardPage() {
     const trelloBoard = currentProject.repositoryDTOList.find(repo => repo.type === 'trello')
     if (trelloBoard !== undefined) {
       Axios.get(`http://localhost:9100/pvs-api/repository/trello/check?url=${trelloBoard.url}` ,
+      {headers: {"Authorization": `${jwtToken}`}})
+      .then(
+        Axios.get(`http://localhost:9100/pvs-api/trello/board?url=${trelloBoard.url}` ,
         {headers: {"Authorization": `${jwtToken}`}})
-        .then(
-          Axios.get(`http://localhost:9100/pvs-api/trello/board?url=${trelloBoard.url}` ,
-            {headers: {"Authorization": `${jwtToken}`}})
-            .then((response) => {
-              setBoardData(response.data)
-              setHasBoardData(true)
-              console.log(boardData)
-            })
-            .catch((e) => {
-              alert(e.response.status)
-              console.error(e)
-            })
-        )
+        .then((response) => {
+          setBoardData(response.data)
+          setHasBoardData(true)
+        })
         .catch((e) => {
           alert(e.response.status)
           console.error(e)
         })
+      )
+      .catch((e) => {
+        alert(e.response.status)
+        console.error(e)
+      })
     }
-
   }
 
   const TEXTS = {
