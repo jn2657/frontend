@@ -20,6 +20,16 @@ const useStyles = makeStyles((theme) => ({
     zIndex: theme.zIndex.drawer + 1,
     color: '#fff',
   },
+  buttonContainer: {
+    display: 'flex',
+    '& > *': {
+      margin: theme.spacing(1),
+    },
+    minWidth: '30px',
+    alignItems: 'center',
+    width:"67%",
+    justifyContent: "space-between",
+  }
 }))
 
 function CodeBasePage(prop) {
@@ -172,23 +182,25 @@ function CodeBasePage(prop) {
       <Backdrop className={classes.backdrop} open={open}>
         <CircularProgress color="inherit"/>
       </Backdrop>
-      <div className={classes.root}>
+      <div className={classes.buttonContainer}>
+        <span style={{display: "flex", alignItems:"center"}}>
         <ProjectAvatar
           size="small"
           project={currentProject}
         />
-        <p>
+        <p style={{margin: "0 1em"}}>
           <h2>{currentProject.projectName}</h2>
         </p>
+        </span>
+        <Button
+          variant="primary"
+          size="lg"
+          disabled={isLoading}
+          onClick={!isLoading ? handleClick : null}
+        >
+          {isLoading ? 'Loading…' : 'reload'}
+        </Button>
       </div>
-      <Button
-        variant="primary"
-        size="lg"
-        disabled={isLoading}
-        onClick={!isLoading ? handleClick : null}
-      >
-        {isLoading ? 'Loading…' : 'reload'}
-      </Button>
       <div className={classes.root}>
         <div style={{width: "67%"}}>
           <div>
