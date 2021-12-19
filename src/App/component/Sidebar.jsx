@@ -343,20 +343,6 @@ function Sidebar(prop) {
                   <ListItemText primary="board"/>
                 </ListItem>
 
-                <ListItem button className={classes.nested} onClick={goToTrelloBoard}>
-                  <ListItemIcon>
-                    <GoIssueOpened size={24.5}/>
-                  </ListItemIcon>
-                  <ListItemText primary="CFD"/>
-                </ListItem>
-
-                <ListItem button className={classes.nested} onClick={goToTrelloBoard}>
-                  <ListItemIcon>
-                    <GoIssueOpened size={24.5}/>
-                  </ListItemIcon>
-                  <ListItemText primary="lead and cycle time"/>
-                </ListItem>
-
               </List>
             </Collapse>
           </div>
