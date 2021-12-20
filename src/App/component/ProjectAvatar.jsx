@@ -5,6 +5,7 @@ import {Box, CardActionArea, Avatar, CardActions, IconButton} from '@material-ui
 import GitHubIcon from '@material-ui/icons/GitHub';
 import FilterDramaIcon from '@material-ui/icons/FilterDrama';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
+import DashboardIcon from '@material-ui/icons/Dashboard';
 import AddIcon from '@material-ui/icons/Add';
 import AddRepositoryDialog from './AddRepositoryDialog';
 import {connect} from 'react-redux'
@@ -39,16 +40,19 @@ function ProjectAvatar(props) {
   const [hasGithubRepo, setHasGithubRepo] = useState(false)
   const [hasGitlabRepo, setHasGitlabRepo] = useState(false)
   const [hasSonarRepo, setHasSonarRepo] = useState(false)
+  const [hasTrelloBoard, setHasTrelloBoard] = useState(false)
 
   useEffect(() => {
     if (props.size === 'large') {
       const getGithubRepo = props.project.repositoryDTOList.find(x => x.type === "github")
       const getGitlabRepo = props.project.repositoryDTOList.find(x => x.type === "gitlab")
       const getSonarRepo = props.project.repositoryDTOList.find(x => x.type === "sonar")
+      const getTrelloBoard = props.project.repositoryDTOList.find(x => x.type === "trello")
 
       setHasGithubRepo(getGithubRepo !== undefined)
       setHasGitlabRepo(getGitlabRepo !== undefined)
       setHasSonarRepo(getSonarRepo !== undefined)
+      setHasTrelloBoard(getTrelloBoard !== undefined)
     }
   }, [props.project])
 
@@ -70,6 +74,12 @@ function ProjectAvatar(props) {
     history.push("/dashboard")
   }
 
+  const goToTrelloBoard = () => {
+    localStorage.setItem("projectId", props.project.projectId)
+    props.setCurrentProjectId(props.project.projectId)
+    history.push("/trello_board")
+  }
+
   const showAddRepoDialog = () => {
     setAddRepoDialogOpen(true)
   }
@@ -83,6 +93,7 @@ function ProjectAvatar(props) {
           <p style={{"textAlign": "center"}}>{props.project.projectName}</p>
           }
         </CardActionArea>
+
         {props.size === 'large' &&
         <CardActions disableSpacing>
 
@@ -101,6 +112,12 @@ function ProjectAvatar(props) {
           {hasSonarRepo &&
           <IconButton aria-label="SonarQube" onClick={goToCodeCoverage}>
             <GpsFixedIcon/>
+          </IconButton>
+          }
+
+          {hasTrelloBoard &&
+          <IconButton aria-label="Trello" onClick={goToTrelloBoard}>
+            <DashboardIcon/>
           </IconButton>
           }
 

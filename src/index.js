@@ -6,11 +6,11 @@ import * as serviceWorker from './serviceWorker'
 import {Provider} from 'react-redux';
 import {createStore} from 'redux';
 import rootReducer from './redux/reducer'
-import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
+import {createTheme, ThemeProvider} from '@material-ui/core/styles';
 
 const myStore = createStore(rootReducer)
 
-const theme = createMuiTheme({
+const theme = createTheme({
   palette: {
     primary: {
       light: '#f8e678',
