@@ -19,7 +19,14 @@
     "react-scripts": "^4.0.3",
     "react-bootstrap": "2.0.3",
     "react-trello": "^2.2.11",
+<<<<<<< HEAD
     "redux": "^4.1.1"
+=======
+    "react-is": "17.0.2",
+    "styled-components": "^5.3.3",
+    "redux": "^4.1.1",
+    "react-google-charts": "3.0.15"
+>>>>>>> add pie chart with commit data
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.14.1",
