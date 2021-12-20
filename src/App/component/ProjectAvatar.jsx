@@ -10,6 +10,15 @@ import AddIcon from '@material-ui/icons/Add';
 import AddRepositoryDialog from './AddRepositoryDialog';
 import {connect} from 'react-redux'
 import {setCurrentProjectId} from '../../redux/action'
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle
+} from '@material-ui/core'
+import Axios from "axios"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,6 +50,8 @@ function ProjectAvatar(props) {
   const [hasGitlabRepo, setHasGitlabRepo] = useState(false)
   const [hasSonarRepo, setHasSonarRepo] = useState(false)
   const [hasTrelloBoard, setHasTrelloBoard] = useState(false)
+  const [deletionAlertDialog, setDeletionAlertDialog] = useState(false)
+  const jwt = localStorage.getItem("jwtToken")
 
   useEffect(() => {
     if (props.size === 'large') {
@@ -84,9 +95,48 @@ function ProjectAvatar(props) {
     setAddRepoDialogOpen(true)
   }
 
+  const toggleDeletionAlertDialog = () => {
+    setDeletionAlertDialog(!deletionAlertDialog)
+  }
+
+  const deleteProject = () => {
+    Axios.delete(`http://localhost:9100/pvs-api/project/remove/${props.project.projectId}`,
+      {headers: {...(jwt && {"Authorization": jwt})}})  // If jwt is null, it will return {} to headers. Otherwise it will return {"Authorization": jwt}
+      .then(() => {
+        toggleDeletionAlertDialog()
+        props.reloadProjects()
+      })
+      .catch((e) => {
+        console.error(e)
+      })
+  }
+
   return (
     <div>
       <Box className={props.size === 'large' ? classes.large : classes.small}>
+      {props.size === 'large' &&
+      <Button onClick={toggleDeletionAlertDialog}>X</Button>
+      }
+      <Dialog
+      open={deletionAlertDialog}
+      onClose={toggleDeletionAlertDialog}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description">
+        <DialogTitle id="alert-dialog-title">
+          {"Are You Sure You Want to Delete This Project?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            You cannot restore it after deleting.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={toggleDeletionAlertDialog}>Back</Button>
+          <Button onClick={deleteProject} autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
         <CardActionArea onClick={goToDashboard}>
           <Avatar alt="first repository" src={props.project.avatarURL} className={classes.avatar}/>
           {props.size === 'large' &&
