@@ -16,7 +16,7 @@ import {
 } from '@material-ui/core'
 
 import InputAdornment from '@material-ui/core/InputAdornment';
-import { SiGithub, SiSonarqube, SiGitlab, SiTrello } from 'react-icons/si'
+import {SiGithub, SiSonarqube, SiGitlab, SiTrello} from 'react-icons/si'
 
 export default function AddRepositoryDialog({ open, reloadProjects, handleClose, projectId }) {
 
@@ -87,7 +87,7 @@ export default function AddRepositoryDialog({ open, reloadProjects, handleClose,
 
     if (repoType === "sonar") {
       return Axios.get(`http://localhost:9100/pvs-api/repository/sonar/check?url=${repositoryURL}`,
-        { headers: { "Authorization": `${jwtToken}` } })
+        {headers: {"Authorization": `${jwtToken}`}})
         .then(() => {
           return true
         })
@@ -100,7 +100,7 @@ export default function AddRepositoryDialog({ open, reloadProjects, handleClose,
 
     if (repoType === "trello") {
       return Axios.get(`http://localhost:9100/pvs-api/repository/trello/check?url=${repositoryURL}`,
-        { headers: { "Authorization": `${jwtToken}` } })
+        {headers: {"Authorization": `${jwtToken}`}})
         .then(() => {
           return true
         })
@@ -146,6 +146,9 @@ export default function AddRepositoryDialog({ open, reloadProjects, handleClose,
                 {repoType === "trello" &&
                   <SiTrello />
                 }
+                {repoType === "trello" &&
+                <SiTrello />
+                }
               </InputAdornment>
             ),
           }}
@@ -169,18 +172,18 @@ export default function AddRepositoryDialog({ open, reloadProjects, handleClose,
         </DialogContentText>
         <FormControl component="fieldset">
           <FormLabel component="legend" />
-          <RadioGroup row aria-label="repositoryType" name="row-radio-buttons-group">
-            <FormControlLabel value="github" control={<Radio />} onChange={selected} label="GitHub" />
-            <FormControlLabel value="gitlab" control={<Radio />} onChange={selected} label="GitLab" />
-            <FormControlLabel value="sonar" control={<Radio />} onChange={selected} label="SonarQube" />
-            <FormControlLabel value="trello" control={<Radio />} onChange={selected} label="Trello" />
-            <FormControlLabel
-              value="disabled"
-              disabled
-              control={<Radio />}
-              label="other"
-            />
-          </RadioGroup>
+            <RadioGroup row aria-label="repositoryType" name="row-radio-buttons-group">
+              <FormControlLabel value="github" control={<Radio />} onChange={selected} label="GitHub" />
+              <FormControlLabel value="gitlab" control={<Radio />} onChange={selected} label="GitLab" />
+              <FormControlLabel value="sonar" control={<Radio />} onChange={selected} label="SonarQube" />
+              <FormControlLabel value="trello" control={<Radio />} onChange={selected} label="Trello" />
+              <FormControlLabel
+                value="disabled"
+                disabled
+                control={<Radio />}
+                label="other"
+              />
+            </RadioGroup>
         </FormControl>
         <div>
           {showDiv ? <InputDiv /> : null}
