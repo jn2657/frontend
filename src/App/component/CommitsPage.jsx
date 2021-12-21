@@ -222,7 +222,6 @@ function CommitsPage(prop) {
     chartDataset.labels.forEach(member => {
       setDataForMemberCommitPieChart(previousArray => [...previousArray, [member.replace("\"", "").replace("\"", ""), chartDataset.data[member]]])
     })
-    console.log(dataForMemberCommitPieChart)
   }, [commitListData])
 
   if (!projectId) {
@@ -284,15 +283,16 @@ function CommitsPage(prop) {
 
       <div className={classes.root}>
         <div style={{width: "67%"}}>
+          <h1>Contribution of Each Member</h1>
           <Chart
             chartType="PieChart"
             loader={<div>Loading Chart</div>}
             data={dataForMemberCommitPieChart}
             options={{
-              title: 'Contribute of each member',
               is3D: true, // 3D chart style
+              backgroundColor: 'transparent',
+              height: '300px',
             }}
-            rootProps={{ 'CommitsPieChart': '1' }}
           />
         </div>
       </div>
