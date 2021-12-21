@@ -57,6 +57,7 @@ function CommitsPage(prop) {
   const projectId = localStorage.getItem("projectId")
   const jwtToken = localStorage.getItem("jwtToken")
 
+  // Get current project
   useEffect(() => {
     Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
       {headers: {"Authorization": `${jwtToken}`}})
@@ -69,14 +70,14 @@ function CommitsPage(prop) {
       })
   }, [])
 
-  const getCommitFromGithub = () => {
+  const getCommitFromGitHub = () => {
     const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
     if (githubRepo !== undefined){
       const query = githubRepo.url.split("github.com/")[1]
       Axios.post(`http://localhost:9100/pvs-api/github/commits/${query}`, "",
       {headers: {"Authorization": `${jwtToken}`}})
       .then(() => {
-        getGithubCommitFromDB()
+        getGitHubCommitFromDB()
         setLoading(false)
       })
       .catch((e) => {
@@ -86,7 +87,7 @@ function CommitsPage(prop) {
     }
   }
 
-  const getGithubCommitFromDB = () => {
+  const getGitHubCommitFromDB = () => {
     const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
     if (githubRepo !== undefined){
       const query = githubRepo.url.split("github.com/")[1]
@@ -103,14 +104,14 @@ function CommitsPage(prop) {
     }
   }
 
-  const getCommitFromGitlab = () => {
+  const getCommitFromGitLab = () => {
     const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
     if(gitlabRepo !== undefined){
       const query = gitlabRepo.url.split("gitlab.com/")[1]
       Axios.post(`http://localhost:9100/pvs-api/gitlab/commits/${query}`, "",
       {headers: {"Authorization": `${jwtToken}`}})
       .then(() => {
-        getGitlabCommitFromDB()
+        getGitLabCommitFromDB()
         setLoading(false)
       })
       .catch((e) => {
@@ -120,7 +121,7 @@ function CommitsPage(prop) {
     }
   }
 
-  const getGitlabCommitFromDB = () => {
+  const getGitLabCommitFromDB = () => {
     const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
     if(gitlabRepo !== undefined){
       const query = gitlabRepo.url.split("gitlab.com/")[1]
@@ -138,24 +139,26 @@ function CommitsPage(prop) {
 
   const handleClick = () => setLoading(true);
 
+  // Default get commits from database
   useEffect(() => {
     if (Object.keys(currentProject).length !== 0) {
       handleToggle()
-      getGithubCommitFromDB()
-      getGitlabCommitFromDB()
+      getGitHubCommitFromDB()
+      getGitLabCommitFromDB()
       handleClose()
     }
   }, [currentProject, prop.startMonth, prop.endMonth])
 
+  // To reduce loading time, it will get/update commits from GitHub/GitLab only if the reload button is clicked.
   useEffect(() => {
     if (isLoading) {
       const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
       const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
       if (githubRepo !== undefined) {
-        getCommitFromGithub()
+        getCommitFromGitHub()
       }
       if (gitlabRepo !== undefined) {
-        getCommitFromGitlab()
+        getCommitFromGitLab()
       }
     }
   }, [isLoading]);
@@ -237,15 +240,20 @@ function CommitsPage(prop) {
         <CircularProgress color="inherit"/>
       </Backdrop>
       <div className={classes.buttonContainer}>
+
         <span style={{display:"flex", alignItems:"center"}}>
+        {/* Project Avatar*/}
         <ProjectAvatar
           size="small"
           project={currentProject}
         />
+        {/* Project Name */}
         <p style={{margin: "0 1em"}}>
           <h2>{currentProject ? currentProject.projectName : ""}</h2>
         </p>
         </span>
+
+        {/* Reload Button */}
         <Button
           disabled={isLoading}
           onClick={!isLoading ? handleClick : null}

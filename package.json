@@ -19,19 +19,16 @@
     "react-scripts": "^4.0.3",
     "react-bootstrap": "2.0.3",
     "react-trello": "^2.2.11",
-<<<<<<< HEAD
-    "redux": "^4.1.1"
-=======
     "react-is": "17.0.2",
     "styled-components": "^5.3.3",
     "redux": "^4.1.1",
     "react-google-charts": "3.0.15"
->>>>>>> add pie chart with commit data
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
+    "@testing-library/dom": "^8.11.1",
     "clsx": "^1.1.1",
     "eslint": "^8.0.1",
     "eslint-plugin-react": "^7.26.1"
