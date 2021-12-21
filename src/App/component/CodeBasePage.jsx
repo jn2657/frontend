@@ -52,53 +52,53 @@ function CodeBasePage(prop) {
   }, [])
 
   const getCommitFromGithub = () => {
-      const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
-      if (githubRepo !== undefined){
-          const query = githubRepo.url.split("github.com/")[1]
-          Axios.post(`http://localhost:9100/pvs-api/github/commits/${query}`, "",
+    const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
+    if (githubRepo !== undefined){
+      const query = githubRepo.url.split("github.com/")[1]
+      Axios.post(`http://localhost:9100/pvs-api/github/commits/${query}`, "",
+      {headers: {"Authorization": `${jwtToken}`}})
+      .then(() => {
+          // todo need refactor with async
+          Axios.get(`http://localhost:9100/pvs-api/github/commits/${query}`,
           {headers: {"Authorization": `${jwtToken}`}})
-          .then(() => {
-              // todo need refactor with async
-              Axios.get(`http://localhost:9100/pvs-api/github/commits/${query}`,
-              {headers: {"Authorization": `${jwtToken}`}})
-              .then((response) => {
-                  setCommitListData(response.data)
-              })
-              .catch((e) => {
-                alert(e.response.status)
-                console.error(e)
-              })
+          .then((response) => {
+              setCommitListData(response.data)
           })
           .catch((e) => {
-            alert(e.response.status)
-            console.error(e)
-          })
-      }
-    }
-
-    const getCommitFromGitlab = () => {
-        const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
-        if(gitlabRepo !== undefined){
-            const query = gitlabRepo.url.split("gitlab.com/")[1]
-            Axios.post(`http://localhost:9100/pvs-api/gitlab/commits/${query}`, "",
-            {headers: {"Authorization": `${jwtToken}`}})
-            .then(() => {
-                Axios.get(`http://localhost:9100/pvs-api/gitlab/commits/${query}`,
-                {headers: {"Authorization": `${jwtToken}`}})
-                .then((response) => {
-                    setCommitListData(prevArray => ([...prevArray, ...response.data]))
-                })
-                .catch((e) => {
-                  alert(e)
-                  console.error(e)
-                })
-            })
-            .catch((e) => {
               alert(e.response.status)
               console.error(e)
-            })
-        }
-      }
+          })
+      })
+      .catch((e) => {
+        alert(e.response.status)
+        console.error(e)
+      })
+    }
+  }
+
+  const getCommitFromGitlab = () => {
+    const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
+    if(gitlabRepo !== undefined){
+      const query = gitlabRepo.url.split("gitlab.com/")[1]
+      Axios.post(`http://localhost:9100/pvs-api/gitlab/commits/${query}`, "",
+      {headers: {"Authorization": `${jwtToken}`}})
+      .then(() => {
+          Axios.get(`http://localhost:9100/pvs-api/gitlab/commits/${query}`,
+          {headers: {"Authorization": `${jwtToken}`}})
+          .then((response) => {
+              setCommitListData(prevArray => ([...prevArray, ...response.data]))
+          })
+          .catch((e) => {
+              alert(e)
+              console.error(e)
+          })
+      })
+      .catch((e) => {
+          alert(e.response.status)
+          console.error(e)
+      })
+    }
+  }
 
   useEffect(() => {
     if (Object.keys(currentProject).length !== 0) {
@@ -144,7 +144,6 @@ function CodeBasePage(prop) {
         />
         <p>
           <h2>{currentProject.projectName}</h2>
-
         </p>
       </div>
       <div className={classes.root}>

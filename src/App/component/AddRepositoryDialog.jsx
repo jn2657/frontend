@@ -16,7 +16,7 @@ import {
 } from '@material-ui/core'
 
 import InputAdornment from '@material-ui/core/InputAdornment';
-import {SiGithub, SiSonarqube, SiGitlab} from 'react-icons/si'
+import {SiGithub, SiSonarqube, SiGitlab, SiTrello} from 'react-icons/si'
 
 export default function AddRepositoryDialog({open, reloadProjects, handleClose, projectId}) {
 
@@ -72,6 +72,7 @@ export default function AddRepositoryDialog({open, reloadProjects, handleClose, 
           return false
         })
     }
+
     if (repoType === "gitlab") {
       return Axios.get(`http://localhost:9100/pvs-api/repository/gitlab/check?url=${repositoryURL}`,
         {headers: {"Authorization": `${jwtToken}`}})
@@ -83,17 +84,31 @@ export default function AddRepositoryDialog({open, reloadProjects, handleClose, 
           return false
         })
     }
+
     if (repoType === "sonar") {
       return Axios.get(`http://localhost:9100/pvs-api/repository/sonar/check?url=${repositoryURL}`,
-      {headers: {"Authorization": `${jwtToken}`}})
-      .then(() => {
-        return true
-      })
-      .catch((e) => {
-        alert("sonar error")
-        console.error(e)
-        return false
-      })
+        {headers: {"Authorization": `${jwtToken}`}})
+        .then(() => {
+          return true
+        })
+        .catch((e) => {
+          alert("sonar error")
+          console.error(e)
+          return false
+        })
+    }
+
+    if (repoType === "trello") {
+      return Axios.get(`http://localhost:9100/pvs-api/repository/trello/check?url=${repositoryURL}`,
+        {headers: {"Authorization": `${jwtToken}`}})
+        .then(() => {
+          return true
+        })
+        .catch((e) => {
+          alert("trello error")
+          console.error(e)
+          return false
+        })
     }
   }
 
@@ -128,6 +143,9 @@ export default function AddRepositoryDialog({open, reloadProjects, handleClose, 
                 {repoType === "sonar" &&
                 <SiSonarqube />
                 }
+                {repoType === "trello" &&
+                <SiTrello />
+                }
               </InputAdornment>
             ),
           }}
@@ -153,8 +171,9 @@ export default function AddRepositoryDialog({open, reloadProjects, handleClose, 
           <FormLabel component="legend" />
             <RadioGroup row aria-label="repositoryType" name="row-radio-buttons-group">
               <FormControlLabel value="github" control={<Radio />} onChange={selected} label="GitHub" />
-              <FormControlLabel value="gitlab" control={<Radio />} onClick={selected} label="GitLab" />
-              <FormControlLabel value="sonar" control={<Radio />} onClick={selected} label="SonarQube" />
+              <FormControlLabel value="gitlab" control={<Radio />} onChange={selected} label="GitLab" />
+              <FormControlLabel value="sonar" control={<Radio />} onChange={selected} label="SonarQube" />
+              <FormControlLabel value="trello" control={<Radio />} onChange={selected} label="Trello" />
               <FormControlLabel
                 value="disabled"
                 disabled
