@@ -63,14 +63,14 @@ function CodeBasePage(prop) {
       })
   }, [])
 
-  const getCommitFromGithub = () => {
+  const getCommitFromGitHub = () => {
     const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
     if (githubRepo !== undefined){
       const query = githubRepo.url.split("github.com/")[1]
       Axios.post(`http://localhost:9100/pvs-api/github/commits/${query}`, "",
       {headers: {"Authorization": `${jwtToken}`}})
       .then(() => {
-        getGithubCommitFromDB()
+        getGitHubCommitFromDB()
         setLoading(false)
       })
       .catch((e) => {
@@ -80,7 +80,7 @@ function CodeBasePage(prop) {
     }
   }
 
-  const getGithubCommitFromDB = () => {
+  const getGitHubCommitFromDB = () => {
     const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
     if (githubRepo !== undefined){
       const query = githubRepo.url.split("github.com/")[1]
@@ -97,14 +97,14 @@ function CodeBasePage(prop) {
     }
   }
 
-  const getCommitFromGitlab = () => {
+  const getCommitFromGitLab = () => {
     const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
     if(gitlabRepo !== undefined){
       const query = gitlabRepo.url.split("gitlab.com/")[1]
       Axios.post(`http://localhost:9100/pvs-api/gitlab/commits/${query}`, "",
       {headers: {"Authorization": `${jwtToken}`}})
       .then(() => {
-        getGitlabCommitFromDB()
+        getGitLabCommitFromDB()
         setLoading(false)
       })
       .catch((e) => {
@@ -114,7 +114,7 @@ function CodeBasePage(prop) {
     }
   }
 
-  const getGitlabCommitFromDB = () => {
+  const getGitLabCommitFromDB = () => {
     const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
     if(gitlabRepo !== undefined){
       const query = gitlabRepo.url.split("gitlab.com/")[1]
@@ -132,14 +132,29 @@ function CodeBasePage(prop) {
 
   const handleClick = () => setLoading(true);
 
+  // Default get commits from database
   useEffect(() => {
     if (Object.keys(currentProject).length !== 0) {
       handleToggle()
-      getGithubCommitFromDB()
-      getGitlabCommitFromDB()
+      getGitHubCommitFromDB()
+      getGitLabCommitFromDB()
       handleClose()
     }
   }, [currentProject, prop.startMonth, prop.endMonth])
+
+  // To reduce loading time, it will get/update commits from GitHub/GitLab only if the reload button is clicked.
+  useEffect(() => {
+    if (isLoading) {
+      const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
+      const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
+      if (githubRepo !== undefined) {
+        getCommitFromGitHub()
+      }
+      if (gitlabRepo !== undefined) {
+        getCommitFromGitLab()
+      }
+    }
+  }, [isLoading]);
 
   useEffect(() => {
     if (isLoading) {
