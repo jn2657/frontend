@@ -162,19 +162,6 @@ function CommitsPage(prop) {
   }, [isLoading]);
 
   useEffect(() => {
-    if (isLoading) {
-      const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
-      const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
-      if (githubRepo !== undefined) {
-        getCommitFromGithub()
-      }
-      if (gitlabRepo !== undefined) {
-        getCommitFromGitlab()
-      }
-    }
-  }, [isLoading]);
-
-  useEffect(() => {
     const {startMonth, endMonth} = prop
 
     let chartDataset = {labels: [], data: {team: []}}
