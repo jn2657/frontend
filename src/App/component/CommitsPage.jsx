@@ -8,7 +8,6 @@ import {Backdrop, CircularProgress, MenuItem, Select} from '@material-ui/core'
 import {connect} from 'react-redux'
 import {Redirect} from 'react-router-dom'
 import { Button } from 'react-bootstrap'
-import Chart from 'react-google-charts'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -40,7 +39,6 @@ function CommitsPage(prop) {
   const [commitListData, setCommitListData] = useState([])
   const [dataForTeamCommitChart, setDataForTeamCommitChart] = useState({labels: [], data: {team: []}})
   const [dataForMemberCommitChart, setDataForMemberCommitChart] = useState({labels: [], data: {}})
-  const [dataForMemberCommitPieChart, setDataForMemberCommitPieChart] = useState({data: []})
   const [currentProject, setCurrentProject] = useState({})
 
   const [numberOfMember, setNumberOfMember] = useState(5)
@@ -208,25 +206,6 @@ function CommitsPage(prop) {
     setDataForMemberCommitChart(chartDataset)
   }, [commitListData, prop.startMonth, prop.endMonth, numberOfMember])
 
-  // Generate commits pie chart
-  useEffect(() => {
-    let chartDataset = {
-      labels: [],
-      data: {}
-    }
-    new Set(commitListData.map(commit => commit.authorName)).forEach(author => {
-      chartDataset.data[author] = 0
-      chartDataset.labels.push(author)
-    })
-    commitListData.forEach(commitData => {
-      chartDataset.data[commitData.authorName] += 1
-    })
-    setDataForMemberCommitPieChart([["Member", "Numbers of commits"]])
-    chartDataset.labels.forEach(member => {
-      setDataForMemberCommitPieChart(previousArray => [...previousArray, [member.replace("\"", "").replace("\"", ""), chartDataset.data[member]]])
-    })
-  }, [commitListData])
-
   if (!projectId) {
     return (
       <Redirect to="/select"/>
@@ -286,22 +265,6 @@ function CommitsPage(prop) {
               <DrawingBoard data={dataForMemberCommitChart} id="member-commit-chart"/>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div className={classes.root}>
-        <div style={{width: "67%"}}>
-          <h1>Contribution of Each Member</h1>
-          <Chart
-            chartType="PieChart"
-            loader={<div>Loading Chart</div>}
-            data={dataForMemberCommitPieChart}
-            options={{
-              is3D: true, // 3D chart style
-              backgroundColor: 'transparent',
-              height: '300px',
-            }}
-          />
         </div>
       </div>
     </div>

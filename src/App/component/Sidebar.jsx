@@ -220,6 +220,13 @@ function Sidebar(prop) {
                   </ListItemIcon>
                   <ListItemText primary="Code Base"/>
                 </ListItem>
+
+                <ListItem button className={classes.nested} onClick={goToContribution}>
+                  <ListItemIcon>
+                    <Code/>
+                  </ListItemIcon>
+                  <ListItemText primary="Contribution"/>
+                </ListItem>
               </List>
             </Collapse>
           </div>
@@ -261,6 +268,13 @@ function Sidebar(prop) {
                     <Code/>
                   </ListItemIcon>
                   <ListItemText primary="Code Base"/>
+                </ListItem>
+
+                <ListItem button className={classes.nested} onClick={goToContribution}>
+                  <ListItemIcon>
+                    <Code/>
+                  </ListItemIcon>
+                  <ListItemText primary="Contribution"/>
                 </ListItem>
               </List>
             </Collapse>
@@ -376,6 +390,10 @@ function Sidebar(prop) {
 
   const goToCodeBase = () => {
     history.push("/codebase")
+  }
+
+  const goToContribution = () => {
+    history.push("/contribution")
   }
 
   const goToCodeCoverage = () => {
