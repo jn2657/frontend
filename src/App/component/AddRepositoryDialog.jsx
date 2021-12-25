@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react'
+import { useEffect, useState } from 'react'
 import Axios from 'axios'
 import {
   Button,
@@ -16,9 +16,9 @@ import {
 } from '@material-ui/core'
 
 import InputAdornment from '@material-ui/core/InputAdornment';
-import {SiGithub, SiSonarqube, SiGitlab, SiTrello} from 'react-icons/si'
+import { SiGithub, SiSonarqube, SiGitlab, SiTrello } from 'react-icons/si'
 
-export default function AddRepositoryDialog({open, reloadProjects, handleClose, projectId}) {
+export default function AddRepositoryDialog({ open, reloadProjects, handleClose, projectId }) {
 
   const [repositoryURL, setRepositoryURL] = useState("")
   const [repoType, setRepoType] = useState("")
@@ -43,27 +43,27 @@ export default function AddRepositoryDialog({open, reloadProjects, handleClose, 
             }
 
             Axios.post(`http://localhost:9100/pvs-api/project/${projectId}/repository/${repoType}`, payload,
-              {headers: {"Authorization": `${jwtToken}`}})
+              { headers: { "Authorization": `${jwtToken}` } })
               .then(() => {
                 reloadProjects()
                 handleClose()
               })
               .catch((e) => {
-                alert(e.response.status)
+                alert(e.response?.status)
                 console.error(e)
               })
           }
         }).catch((e) => {
-        alert(e.response.status)
-        console.error(e)
-      })
+          alert(e.response?.status)
+          console.error(e)
+        })
     }
   }
 
   const checkRepositoryURL = () => {
     if (repoType === "github") {
       return Axios.get(`http://localhost:9100/pvs-api/repository/github/check?url=${repositoryURL}`,
-        {headers: {"Authorization": `${jwtToken}`}})
+        { headers: { "Authorization": `${jwtToken}` } })
         .then(() => {
           return true
         })
@@ -75,7 +75,7 @@ export default function AddRepositoryDialog({open, reloadProjects, handleClose, 
 
     if (repoType === "gitlab") {
       return Axios.get(`http://localhost:9100/pvs-api/repository/gitlab/check?url=${repositoryURL}`,
-        {headers: {"Authorization": `${jwtToken}`}})
+        { headers: { "Authorization": `${jwtToken}` } })
         .then(() => {
           return true
         })
@@ -87,7 +87,7 @@ export default function AddRepositoryDialog({open, reloadProjects, handleClose, 
 
     if (repoType === "sonar") {
       return Axios.get(`http://localhost:9100/pvs-api/repository/sonar/check?url=${repositoryURL}`,
-        {headers: {"Authorization": `${jwtToken}`}})
+        { headers: { "Authorization": `${jwtToken}` } })
         .then(() => {
           return true
         })
@@ -100,7 +100,7 @@ export default function AddRepositoryDialog({open, reloadProjects, handleClose, 
 
     if (repoType === "trello") {
       return Axios.get(`http://localhost:9100/pvs-api/repository/trello/check?url=${repositoryURL}`,
-        {headers: {"Authorization": `${jwtToken}`}})
+        { headers: { "Authorization": `${jwtToken}` } })
         .then(() => {
           return true
         })
@@ -118,7 +118,7 @@ export default function AddRepositoryDialog({open, reloadProjects, handleClose, 
   }
 
   const InputDiv = () => {
-    return(
+    return (
       <div>
         <TextField
           margin="dense"
@@ -134,16 +134,16 @@ export default function AddRepositoryDialog({open, reloadProjects, handleClose, 
             startAdornment: (
               <InputAdornment position="start">
                 {repoType === "github" &&
-                <SiGithub />
+                  <SiGithub />
                 }
                 {repoType === "gitlab" &&
-                <SiGitlab />
+                  <SiGitlab />
                 }
                 {repoType === "sonar" &&
-                <SiSonarqube />
+                  <SiSonarqube />
                 }
                 {repoType === "trello" &&
-                <SiTrello />
+                  <SiTrello />
                 }
               </InputAdornment>
             ),
@@ -164,25 +164,25 @@ export default function AddRepositoryDialog({open, reloadProjects, handleClose, 
       <DialogTitle id="form-dialog-title">Add Repository</DialogTitle>
       <DialogContent>
         <DialogContentText>
-            To add a repository, please select a repository type and enter the repository URL.
+          To add a repository, please select a repository type and enter the repository URL.
         </DialogContentText>
         <FormControl component="fieldset">
           <FormLabel component="legend" />
-            <RadioGroup row aria-label="repositoryType" name="row-radio-buttons-group">
-              <FormControlLabel value="github" control={<Radio />} onChange={selected} label="GitHub" />
-              <FormControlLabel value="gitlab" control={<Radio />} onChange={selected} label="GitLab" />
-              <FormControlLabel value="sonar" control={<Radio />} onChange={selected} label="SonarQube" />
-              <FormControlLabel value="trello" control={<Radio />} onChange={selected} label="Trello" />
-              <FormControlLabel
-                value="disabled"
-                disabled
-                control={<Radio />}
-                label="other"
-              />
-            </RadioGroup>
+          <RadioGroup row aria-label="repositoryType" name="row-radio-buttons-group">
+            <FormControlLabel value="github" control={<Radio />} onChange={selected} label="GitHub" />
+            <FormControlLabel value="gitlab" control={<Radio />} onChange={selected} label="GitLab" />
+            <FormControlLabel value="sonar" control={<Radio />} onChange={selected} label="SonarQube" />
+            <FormControlLabel value="trello" control={<Radio />} onChange={selected} label="Trello" />
+            <FormControlLabel
+              value="disabled"
+              disabled
+              control={<Radio />}
+              label="other"
+            />
+          </RadioGroup>
         </FormControl>
         <div>
-            {showDiv ? <InputDiv /> : null}
+          {showDiv ? <InputDiv /> : null}
         </div>
       </DialogContent>
       <DialogActions>
