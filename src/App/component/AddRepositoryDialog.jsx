@@ -128,7 +128,6 @@ export default function AddRepositoryDialog({open, reloadProjects, handleClose, 
           fullWidth
           onChange={(e) => {
             setRepositoryURL(e.target.value)
-            setRepoType("github")
           }}
           required
           InputProps={{
