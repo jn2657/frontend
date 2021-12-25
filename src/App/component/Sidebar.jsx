@@ -267,7 +267,7 @@ function Sidebar(prop) {
   }
 
   const goToPullRequest = () => {
-    history.push("/pull_request")
+    history.push("/pull_requests")
   }
 
   const goToCodeBase = () => {
