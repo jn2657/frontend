@@ -54,7 +54,7 @@ export default function AddRepositoryDialog({ open, reloadProjects, handleClose,
               })
           }
         }).catch((e) => {
-          alert(e.response.status)
+          alert(e.response?.status)
           console.error(e)
         })
     }
@@ -147,10 +147,10 @@ export default function AddRepositoryDialog({ open, reloadProjects, handleClose,
                   <SiTrello />
                 }
                 {repoType === "trello" &&
-                <SiTrello />
+                  <SiTrello />
                 }
                 {repoType === "trello" &&
-                <SiTrello />
+                  <SiTrello />
                 }
               </InputAdornment>
             ),
