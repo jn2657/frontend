@@ -49,12 +49,12 @@ export default function AddRepositoryDialog({ open, reloadProjects, handleClose,
                 handleClose()
               })
               .catch((e) => {
-                alert(e.response.status)
+                alert(e.response?.status)
                 console.error(e)
               })
           }
         }).catch((e) => {
-          alert(e.response.status)
+          alert(e.response?.status)
           console.error(e)
         })
     }
@@ -128,7 +128,6 @@ export default function AddRepositoryDialog({ open, reloadProjects, handleClose,
           fullWidth
           onChange={(e) => {
             setRepositoryURL(e.target.value)
-            setRepoType("github")
           }}
           required
           InputProps={{
@@ -145,9 +144,6 @@ export default function AddRepositoryDialog({ open, reloadProjects, handleClose,
                 }
                 {repoType === "trello" &&
                   <SiTrello />
-                }
-                {repoType === "trello" &&
-                <SiTrello />
                 }
               </InputAdornment>
             ),
