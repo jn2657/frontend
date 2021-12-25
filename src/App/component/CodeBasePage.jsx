@@ -159,19 +159,6 @@ function CodeBasePage(prop) {
   }, [isLoading]);
 
   useEffect(() => {
-    if (isLoading) {
-      const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
-      const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
-      if (githubRepo !== undefined) {
-        getCommitFromGitHub()
-      }
-      if (gitlabRepo !== undefined) {
-        getCommitFromGitLab()
-      }
-    }
-  }, [isLoading]);
-
-  useEffect(() => {
     const { startMonth, endMonth } = prop
 
     let chartDataset = { labels: [], data: { additions: [], deletions: [] } }
