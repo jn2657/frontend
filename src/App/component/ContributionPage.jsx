@@ -59,7 +59,7 @@ function ContributionPage(prop) {
         setCurrentProject(response.data)
       })
       .catch((e) => {
-        alert(e.response.status)
+        alert(e.response?.status)
         console.error(e)
       })
   }, [])
@@ -75,7 +75,7 @@ function ContributionPage(prop) {
           setLoading(false)
         })
         .catch((e) => {
-          alert(e)
+          alert(e.response?.status)
           console.error(e)
         })
     }
@@ -92,7 +92,7 @@ function ContributionPage(prop) {
           setCommitListData(response.data)
         })
         .catch((e) => {
-          alert(e.response.status)
+          alert(e.response?.status)
           console.error(e)
         })
     }
@@ -109,7 +109,7 @@ function ContributionPage(prop) {
           setLoading(false)
         })
         .catch((e) => {
-          alert(e.response.status)
+          alert(e.response?.status)
           console.error(e)
         })
     }
@@ -125,7 +125,7 @@ function ContributionPage(prop) {
           setCommitListData(previousArray => [...previousArray, ...response.data])
         })
         .catch((e) => {
-          alert(e)
+          alert(e.response?.status)
           console.error(e)
         })
     }
@@ -175,12 +175,6 @@ function ContributionPage(prop) {
       setDataForMemberCommitPieChart(previousArray => [...previousArray, [member.replace("\"", "").replace("\"", ""), chartDataset.data[member]]])
     })
   }, [commitListData])
-
-  if (!projectId) {
-    return (
-      <Redirect to="/select" />
-    )
-  }
 
   if (!projectId) {
     return (
