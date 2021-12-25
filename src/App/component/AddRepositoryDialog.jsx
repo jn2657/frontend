@@ -146,12 +146,6 @@ export default function AddRepositoryDialog({ open, reloadProjects, handleClose,
                 {repoType === "trello" &&
                   <SiTrello />
                 }
-                {repoType === "trello" &&
-                  <SiTrello />
-                }
-                {repoType === "trello" &&
-                  <SiTrello />
-                }
               </InputAdornment>
             ),
           }}
