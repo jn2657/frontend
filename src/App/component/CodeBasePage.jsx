@@ -58,7 +58,7 @@ function CodeBasePage(prop) {
         setCurrentProject(response.data)
       })
       .catch((e) => {
-        alert(e.response.status)
+        alert(e.response?.status)
         console.error(e)
       })
   }, [])
@@ -74,7 +74,7 @@ function CodeBasePage(prop) {
           setLoading(false)
         })
         .catch((e) => {
-          alert(e)
+          alert(e.response?.status)
           console.error(e)
         })
     }
@@ -91,7 +91,7 @@ function CodeBasePage(prop) {
           setCommitListData(response.data)
         })
         .catch((e) => {
-          alert(e.response.status)
+          alert(e.response?.status)
           console.error(e)
         })
     }
@@ -108,7 +108,7 @@ function CodeBasePage(prop) {
           setLoading(false)
         })
         .catch((e) => {
-          alert(e.response.status)
+          alert(e.response?.status)
           console.error(e)
         })
     }
@@ -126,7 +126,7 @@ function CodeBasePage(prop) {
           }
         })
         .catch((e) => {
-          alert(e)
+          alert(e.response?.status)
           console.error(e)
         })
     }

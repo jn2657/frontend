@@ -49,7 +49,7 @@ export default function AddRepositoryDialog({ open, reloadProjects, handleClose,
                 handleClose()
               })
               .catch((e) => {
-                alert(e.response.status)
+                alert(e.response?.status)
                 console.error(e)
               })
           }
