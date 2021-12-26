@@ -1,8 +1,8 @@
-import {useEffect, useState} from 'react'
+import { useEffect, useState } from 'react'
 import logo_p from '../../assets/p.png'
 import logo_v from '../../assets/v.png'
 import logo_s from '../../assets/s.png'
-import {useHistory} from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import {
   ExitToApp,
   ArrowBack,
@@ -24,18 +24,19 @@ import {
   Collapse,
   IconButton
 } from '@material-ui/core'
-import {AiFillBug} from 'react-icons/ai'
-import {IoGitCommitSharp, IoNuclear} from 'react-icons/io5'
-import {GoIssueOpened} from 'react-icons/go'
-import {HiDocumentDuplicate} from 'react-icons/hi'
-import {SiGithub, SiSonarqube, SiGitlab, SiTrello} from 'react-icons/si'
-import {RiDashboardFill} from 'react-icons/ri'
+import { AiFillBug } from 'react-icons/ai'
+import { IoGitCommitSharp, IoNuclear } from 'react-icons/io5'
+import { GoIssueOpened } from 'react-icons/go'
+import { HiDocumentDuplicate } from 'react-icons/hi'
+import { SiGithub, SiSonarqube, SiGitlab, SiTrello } from 'react-icons/si'
+import { RiDashboardFill } from 'react-icons/ri'
+import { HiChartPie } from 'react-icons/hi'
 import clsx from 'clsx'
-import {MuiPickersUtilsProvider, DatePicker} from '@material-ui/pickers'
+import { MuiPickersUtilsProvider, DatePicker } from '@material-ui/pickers'
 import MomentUtils from '@date-io/moment'
-import {makeStyles} from '@material-ui/core/styles'
-import {connect} from 'react-redux'
-import {setStartMonth, setEndMonth} from '../../redux/action'
+import { makeStyles } from '@material-ui/core/styles'
+import { connect } from 'react-redux'
+import { setStartMonth, setEndMonth } from '../../redux/action'
 import Axios from 'axios'
 
 const drawerWidth = 240
@@ -90,42 +91,6 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     padding: theme.spacing(3),
   },
-  // search: {
-  //   position: 'relative',
-  //   borderRadius: theme.shape.borderRadius,
-  //   backgroundColor: fade(theme.palette.common.white, 0.15),
-  //   '&:hover': {
-  //     backgroundColor: fade(theme.palette.common.white, 0.25),
-  //   },
-  //   marginRight: theme.spacing(2),
-  //   marginLeft: 0,
-  //   width: '100%',
-  //   [theme.breakpoints.up('sm')]: {
-  //     marginLeft: theme.spacing(3),
-  //     width: 'auto',
-  //   },
-  // },
-  // searchIcon: {
-  //   padding: theme.spacing(0, 2),
-  //   height: '100%',
-  //   position: 'absolute',
-  //   pointerEvents: 'none',
-  //   display: 'flex',
-  //   alignItems: 'center',
-  //   justifyContent: 'center',
-  // },
-  // inputRoot: {
-  //   color: 'inherit',
-  // },
-  // inputInput: {
-  //   padding: theme.spacing(1, 1, 1, 0),
-  //   paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-  //   transition: theme.transitions.create('width'),
-  //   width: '100%',
-  //   [theme.breakpoints.up('md')]: {
-  //     width: '20ch',
-  //   },
-  // },
   list: {
     height: 'calc(100%)',
     width: 'auto'
@@ -164,19 +129,19 @@ function Sidebar(prop) {
       setOpen(!open)
     }}>
       <ListItemIcon>
-        <Icon size={30}/>
+        <Icon size={30} />
       </ListItemIcon>
-      <ListItemText primary={text}/>
-      {open ? <ExpandLess/> : <ExpandMore/>}
+      <ListItemText primary={text} />
+      {open ? <ExpandLess /> : <ExpandMore />}
     </ListItem>
   )
 
   const buildSmallListItem = (text, Icon, onClick) => (
     <ListItem button onClick={onClick}>
       <ListItemIcon>
-        <Icon size={24.5}/>
+        <Icon size={24.5} />
       </ListItemIcon>
-      <ListItemText primary={text}/>
+      <ListItemText primary={text} />
     </ListItem>
   )
 
@@ -184,97 +149,99 @@ function Sidebar(prop) {
     <div className={classes.list} role="presentation">
       <List className={classes.menuList} width="inher">
         {prop.currentProjectId !== 0 &&
-        <div>
-
-          {/* back to select page UI button */}
-          <ListItem button onClick={goToSelect}>
-            <ListItemIcon>
-              <ArrowBack/>
-            </ListItemIcon>
-            <ListItemText primary="Select"/>
-          </ListItem>
-          <Divider/>
-
-          {/* dashboard UI button */}
-          <ListItem button onClick={goToDashBoard}>
-            <ListItemIcon>
-              <RiDashboardFill size={30}/>
-            </ListItemIcon>
-            <ListItemText primary="DashBoard"/>
-          </ListItem>
-          <Divider/>
-
-          {/* github metrics UI button */}
-          {currentProject &&
-          currentProject.repositoryDTOList.find(x => x.type === "github") &&
           <div>
-            {buildTitleListItem("GitHub", SiGithub, githubMenuOpen, setGithubMenuOpen)}
-            <Divider/>
 
-            <Collapse in={githubMenuOpen} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding className={classes.innerList}>
-                {buildSmallListItem("Commits", IoGitCommitSharp, goToCommit)}
-                {buildSmallListItem("Issues", GoIssueOpened, goToIssue)}
-                {buildSmallListItem("Code Base", Code, goToCodeBase)}
-              </List>
-              <Divider/>
-            </Collapse>
+            {/* back to select page UI button */}
+            <ListItem button onClick={goToSelect}>
+              <ListItemIcon>
+                <ArrowBack />
+              </ListItemIcon>
+              <ListItemText primary="Select" />
+            </ListItem>
+            <Divider />
+
+            {/* dashboard UI button */}
+            <ListItem button onClick={goToDashBoard}>
+              <ListItemIcon>
+                <RiDashboardFill size={30} />
+              </ListItemIcon>
+              <ListItemText primary="DashBoard" />
+            </ListItem>
+            <Divider />
+
+            {/* github metrics UI button */}
+            {currentProject &&
+              currentProject.repositoryDTOList.find(x => x.type === "github") &&
+              <div>
+                {buildTitleListItem("GitHub", SiGithub, githubMenuOpen, setGithubMenuOpen)}
+                <Divider />
+
+                <Collapse in={githubMenuOpen} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding className={classes.innerList}>
+                    {buildSmallListItem("Commits", IoGitCommitSharp, goToCommit)}
+                    {buildSmallListItem("Issues", GoIssueOpened, goToIssue)}
+                    {buildSmallListItem("Code Base", Code, goToCodeBase)}
+                    {buildSmallListItem("Contribution", HiChartPie, goToContribution)}
+                  </List>
+                  <Divider />
+                </Collapse>
+              </div>
+            }
+
+            {/* gitlab metrics UI button */}
+            {currentProject &&
+              currentProject.repositoryDTOList.find(x => x.type === "gitlab") &&
+              <div>
+                {buildTitleListItem("GitLab", SiGitlab, gitlabMenuOpen, setGitlabMenuOpen)}
+                <Divider />
+
+                <Collapse in={gitlabMenuOpen} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding className={classes.innerList}>
+                    {buildSmallListItem("Commits", IoGitCommitSharp, goToCommit)}
+                    {buildSmallListItem("Issues", GoIssueOpened, goToIssue)}
+                    {buildSmallListItem("Code Base", Code, goToCodeBase)}
+                    {buildSmallListItem("Contribution", HiChartPie, goToContribution)}
+                  </List>
+                  <Divider />
+                </Collapse>
+              </div>
+            }
+
+            {/* sonar metrics UI button */}
+            {currentProject &&
+              currentProject.repositoryDTOList.find(x => x.type === "sonar") &&
+              <div>
+                {buildTitleListItem("SonarQube", SiSonarqube, sonarMenuOpen, setSonarMenuOpen)}
+                <Divider />
+
+                <Collapse in={sonarMenuOpen} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding className={classes.innerList}>
+                    {buildSmallListItem("Code Coverage", GpsFixed, goToCodeCoverage)}
+                    {buildSmallListItem("Bugs", AiFillBug, goToBug)}
+                    {buildSmallListItem("Code Smells", IoNuclear, goToCodeSmell)}
+                    {buildSmallListItem("Duplications", HiDocumentDuplicate, goToDuplication)}
+                  </List>
+                  <Divider />
+                </Collapse>
+              </div>
+            }
+
+            {/* trello metrics UI button */}
+            {currentProject &&
+              currentProject.repositoryDTOList.find(x => x.type === "trello") &&
+              <div>
+                {buildTitleListItem("Trello", SiTrello, trelloMenuOpen, setTrelloMenuOpen)}
+                <Divider />
+
+                <Collapse in={trelloMenuOpen} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding className={classes.innerList}>
+                    {buildSmallListItem("board", IoGitCommitSharp, goToTrelloBoard)}
+                  </List>
+                  <Divider />
+                </Collapse>
+              </div>
+            }
           </div>
-          }
-
-          {/* gitlab metrics UI button */}
-          {currentProject &&
-          currentProject.repositoryDTOList.find(x => x.type === "gitlab") &&
-          <div>
-            {buildTitleListItem("GitLab", SiGitlab, gitlabMenuOpen, setGitlabMenuOpen)}
-            <Divider/>
-
-            <Collapse in={gitlabMenuOpen} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding className={classes.innerList}>
-                {buildSmallListItem("Commits", IoGitCommitSharp, goToCommit)}
-                {buildSmallListItem("Issues", GoIssueOpened, goToIssue)}
-                {buildSmallListItem("Code Base", Code, goToCodeBase)}
-              </List>
-              <Divider/>
-            </Collapse>
-          </div>
-          }
-
-          {/* sonar metrics UI button */}
-          {currentProject &&
-          currentProject.repositoryDTOList.find(x => x.type === "sonar") &&
-          <div>
-            {buildTitleListItem("SonarQube", SiSonarqube, sonarMenuOpen, setSonarMenuOpen)}
-            <Divider/>
-
-            <Collapse in={sonarMenuOpen} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding className={classes.innerList}>
-                {buildSmallListItem("Code Coverage", GpsFixed, goToCodeCoverage)}
-                {buildSmallListItem("Bugs", AiFillBug, goToBug)}
-                {buildSmallListItem("Code Smells", IoNuclear, goToCodeSmell)}
-                {buildSmallListItem("Duplications", HiDocumentDuplicate, goToDuplication)}
-              </List>
-              <Divider/>
-            </Collapse>
-          </div>
-          }
-
-          {/* trello metrics UI button */}
-          {currentProject &&
-          currentProject.repositoryDTOList.find(x => x.type === "trello") &&
-          <div>
-            {buildTitleListItem("Trello", SiTrello, trelloMenuOpen, setTrelloMenuOpen)}
-            <Divider/>
-
-            <Collapse in={trelloMenuOpen} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding className={classes.innerList}>
-                {buildSmallListItem("board", IoGitCommitSharp, goToTrelloBoard)}
-              </List>
-              <Divider/>
-            </Collapse>
-          </div>
-          }
-        </div>
         }
       </List>
     </div>
@@ -305,6 +272,10 @@ function Sidebar(prop) {
     history.push("/codebase")
   }
 
+  const goToContribution = () => {
+    history.push("/contribution")
+  }
+
   const goToCodeCoverage = () => {
     history.push("/code_coverage")
   }
@@ -330,7 +301,7 @@ function Sidebar(prop) {
   useEffect(() => {
     if (prop.currentProjectId !== 0) {
       Axios.get(`http://localhost:9100/pvs-api/project/1/${prop.currentProjectId}`,
-        {headers: {"Authorization": `${jwtToken}`}})
+        { headers: { "Authorization": `${jwtToken}` } })
         .then((response) => {
           setCurrentProject(response.data)
         })
@@ -342,7 +313,7 @@ function Sidebar(prop) {
 
   return (
     <div className={classes.root}>
-      <CssBaseline/>
+      <CssBaseline />
       <AppBar
         position="fixed"
         className={clsx(classes.appBar, {
@@ -350,19 +321,19 @@ function Sidebar(prop) {
         })}
       >
         <Toolbar>
-          <img src={logo_p} alt={""}/>
-          <img src={logo_v} alt={""}/>
-          <img src={logo_s} alt={""}/>
+          <img src={logo_p} alt={""} />
+          <img src={logo_v} alt={""} />
+          <img src={logo_s} alt={""} />
           <div className={classes.monthSelector}>
             <MuiPickersUtilsProvider utils={MomentUtils}>
               <DatePicker className={classes.datepicker}
-                          fullWidth
-                          focused={false}
-                          openTo="year"
-                          views={["year", "month"]}
-                          label="Start Month and Year"
-                          value={prop.startMonth}
-                          onChange={prop.setStartMonth}
+                fullWidth
+                focused={false}
+                openTo="year"
+                views={["year", "month"]}
+                label="Start Month and Year"
+                value={prop.startMonth}
+                onChange={prop.setStartMonth}
               />
             </MuiPickersUtilsProvider>
           </div>
@@ -380,7 +351,7 @@ function Sidebar(prop) {
             </MuiPickersUtilsProvider>
           </div>
           <IconButton className={classes.logout} onClick={logout}>
-            <ExitToApp/>
+            <ExitToApp />
           </IconButton>
         </Toolbar>
       </AppBar>
@@ -397,12 +368,12 @@ function Sidebar(prop) {
           }),
         }}
       >
-        <div className={classes.drawerContent}/>
-        <Divider/>
+        <div className={classes.drawerContent} />
+        <Divider />
         {buildSidebarList()}
       </Drawer>
       <main className={classes.content}>
-        <div className={classes.drawerContent}/>
+        <div className={classes.drawerContent} />
         {prop.children}
       </main>
     </div>
