@@ -174,7 +174,7 @@ function ProjectAvatar(props) {
           <IconButton aria-label="Add Repository" onClick={showAddRepoDialog}>
             <AddIcon/>
           </IconButton>
-
+          
         </CardActions>
         }
       </Box>

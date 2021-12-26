@@ -20,6 +20,7 @@ specifiers:
   react-bootstrap: 2.0.3
   react-chartjs-2: ^3.2.0
   react-dom: ^17.0.2
+  react-google-charts: 3.0.15
   react-icons: ^4.3.1
   react-is: 17.0.2
   react-redux: ^7.2.5
@@ -42,6 +43,7 @@ dependencies:
   react-bootstrap: 2.0.3_react-dom@17.0.2+react@17.0.2
   react-chartjs-2: 3.2.0_chart.js@3.5.1+react@17.0.2
   react-dom: 17.0.2_react@17.0.2
+  react-google-charts: 3.0.15_9bdd65c2b60ce8638444b80b396a481b
   react-icons: 4.3.1_react@17.0.2
   react-is: 17.0.2
   react-redux: 7.2.5_react-dom@17.0.2+react@17.0.2
@@ -224,6 +226,13 @@ packages:
 
   /@babel/helper-member-expression-to-functions/7.15.4:
     resolution: {integrity: sha512-cokOMkxC/BTyNP1AlY25HuBWM32iCEsLPI4BHDpJCHHm1FU2E7dKWWIXJgQgSFiu4lp8q3bL1BIKwqkSUviqtA==}
+    engines: {node: '>=6.9.0'}
+    dependencies:
+      '@babel/types': 7.16.0
+    dev: false
+
+  /@babel/helper-module-imports/7.15.4:
+    resolution: {integrity: sha512-jeAHZbzUwdW/xHgHQ3QmWR4Jg6j15q4w/gCfwZvtqOxoo5DKtLHk8Bsf4c5RZRC7NmLEs+ohkdq8jFefuvIxAA==}
     engines: {node: '>=6.9.0'}
     dependencies:
       '@babel/types': 7.16.0
@@ -10108,6 +10117,19 @@ packages:
     resolution: {integrity: sha512-nQTTcUu+ATDbrSD1BZHr5kgSD4oF8OFjxun8uAaL8RwPBacGBNPf/yAuVVdx17N8XNzRDMrZ9XcKZHCjPW+9ew==}
     dev: false
 
+  /react-google-charts/3.0.15_9bdd65c2b60ce8638444b80b396a481b:
+    resolution: {integrity: sha512-78s5xOQOJvL+jIewrWQZEHtlVk+5Yh4zZy+ODA1on1o1FaRjKWXxoo4n4JQl1XuqkF/A9NWque3KqM6pMggjzQ==}
+    peerDependencies:
+      prop-types: '>=15'
+      react: '>=16.3.0'
+      react-dom: '>=16.3.0'
+    dependencies:
+      prop-types: 15.7.2
+      react: 17.0.2
+      react-dom: 17.0.2_react@17.0.2
+      react-load-script: 0.0.6_prop-types@15.7.2+react@17.0.2
+    dev: false
+
   /react-icons/4.3.1_react@17.0.2:
     resolution: {integrity: sha512-cB10MXLTs3gVuXimblAdI71jrJx8njrJZmNMEMC+sQu5B/BIOmlsAjskdqpn81y8UBVEGuHODd7/ci5DvoSzTQ==}
     peerDependencies:
@@ -10124,6 +10146,17 @@ packages:
 
   /react-lifecycles-compat/3.0.4:
     resolution: {integrity: sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==}
+    dev: false
+
+  /react-load-script/0.0.6_prop-types@15.7.2+react@17.0.2:
+    resolution: {integrity: sha512-aRGxDGP9VoLxcsaYvKWIW+LRrMOzz2eEcubTS4NvQPPugjk2VvMhow0wWTkSl7RxookomD1MwcP4l5UStg5ShQ==}
+    deprecated: abandoned and unmaintained
+    peerDependencies:
+      prop-types: '>=15'
+      react: '>=0.14.9'
+    dependencies:
+      prop-types: 15.7.2
+      react: 17.0.2
     dev: false
 
   /react-popopo/2.1.9_react-is@17.0.2:
