@@ -36,21 +36,22 @@ function PullRequestsPage(prop) {
   const loadingEnd = () => {
     setLoading(false);
   };
-  const loadingData = () => {
-    setLoading(!open);
+  const isLoading = () => {
+    setLoading(true);
   };
 
-  useEffect(() => {
-    const fetchCurrentProject = async () => {
-      try {
-        const response = await Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
-        { headers: { "Authorization": `${jwtToken}` } })
-        setCurrentProject(response.data)
-      } catch (e) {
-        alert(e.response?.status)
-        console.error(e)
-      }
+  const fetchCurrentProject = async () => {
+    try {
+      const response = await Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
+      { headers: { "Authorization": `${jwtToken}` } })
+      setCurrentProject(response.data)
+    } catch (e) {
+      alert(e.response?.status)
+      console.error(e)
     }
+  }
+
+  useEffect(() => {
     fetchCurrentProject()
   }, [])
 
@@ -71,7 +72,7 @@ function PullRequestsPage(prop) {
 
   useEffect(() => {
     if (Object.keys(currentProject).length !== 0) {
-      loadingData()
+      isLoading()
       getPullRequestsFromGitHub()
       loadingEnd()
     }
@@ -80,31 +81,31 @@ function PullRequestsPage(prop) {
   // Sort data by the given key
   const getPRListSortedBy = (prList, key) => prList.sort((prev, curr) => prev[key] - curr[key])
 
+  const generateChartDataset = () => {
+    const { startMonth, endMonth } = prop
+    let chartDataset = { labels: [], data: { merged: [], closed: [], created: [] } };
+
+    for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
+      chartDataset.labels.push(month.format("YYYY-MM"))
+    }
+    
+    chartDataset.data.created = pushPRCreatedCount()
+    chartDataset.data.closed = pushPRClosedCount()
+    chartDataset.data.merged = pushPRMergedCount()
+
+    return chartDataset
+  }
+
   // Generate the pull-request chart
   useEffect(() => {
-    const generateChartDataset = async () => {
-      const { startMonth, endMonth } = prop
-      let chartDataset = { labels: [], data: { merged: [], closed: [], opened: [] } };
-
-      for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
-        chartDataset.labels.push(month.format("YYYY-MM"))
-      }
-      
-      chartDataset = await pushPRCreatedCount(chartDataset)
-      chartDataset = await pushPRClosedCount(chartDataset)
-      chartDataset = await pushPRMergedCount(chartDataset)
-
-      return chartDataset
-    }
-
-    generateChartDataset().then((chartDataset) => {
-      setDataForPullRequestChart(chartDataset)
-    })
+    const chartDataset = generateChartDataset()
+    setDataForPullRequestChart(chartDataset)
   }, [pullRequestListData, prop.startMonth, prop.endMonth])
 
-  const pushPRCreatedCount = (chartDataset) => {
+  const pushPRCreatedCount = () => {
     const { startMonth, endMonth } = prop
     const prListSortedByCreatedAt = getPRListSortedBy(pullRequestListData, 'createdAt')
+    const created = []
 
     if (prListSortedByCreatedAt.length > 0) {
       // Number of pull requests in each month
@@ -112,16 +113,17 @@ function PullRequestsPage(prop) {
         const prCountInSelectedRange = prListSortedByCreatedAt.findIndex(pullRequest => {
           return moment(pullRequest.createdAt).year() > month.year() || moment(pullRequest.createdAt).year() === month.year() && moment(pullRequest.createdAt).month() > month.month()
         })
-        chartDataset.data.opened.push(prCountInSelectedRange === -1 ? pullRequestListData.length : prCountInSelectedRange)
+        created.push(prCountInSelectedRange === -1 ? pullRequestListData.length : prCountInSelectedRange)
       }
     }
 
-    return chartDataset
+    return created
   }
 
-  const pushPRClosedCount = (chartDataset) => {
+  const pushPRClosedCount = () => {
     const { startMonth, endMonth } = prop
     const prListSortedByClosedAt = getPRListSortedBy(pullRequestListData, 'closedAt')
+    const closed = []
     let noCloseCount
 
     if (prListSortedByClosedAt.length > 0) {
@@ -134,16 +136,17 @@ function PullRequestsPage(prop) {
           }
           return moment(pullRequest.closedAt).year() > month.year() || moment(pullRequest.closedAt).year() === month.year() && moment(pullRequest.closedAt).month() > month.month()
         })
-        chartDataset.data.closed.push(prCountInSelectedRange === -1 ? pullRequestListData.length - noCloseCount : prCountInSelectedRange - noCloseCount)
+        closed.push(prCountInSelectedRange === -1 ? pullRequestListData.length - noCloseCount : prCountInSelectedRange - noCloseCount)
       }
     }
 
-    return chartDataset
+    return closed
   }
 
-  const pushPRMergedCount = (chartDataset) => {
+  const pushPRMergedCount = () => {
     const { startMonth, endMonth } = prop
     const prListSortedByMergedAt = getPRListSortedBy(pullRequestListData, 'mergedAt')
+    const merged = []
     let noMergeCount
 
     if (prListSortedByMergedAt.length > 0) {
@@ -156,11 +159,11 @@ function PullRequestsPage(prop) {
           }
           return moment(pullRequest.mergedAt).year() > month.year() || moment(pullRequest.mergedAt).year() === month.year() && moment(pullRequest.mergedAt).month() > month.month()
         })
-        chartDataset.data.merged.push(prCountInSelectedRange === -1 ? pullRequestListData.length - noMergeCount : prCountInSelectedRange - noMergeCount)
+        merged.push(prCountInSelectedRange === -1 ? pullRequestListData.length - noMergeCount : prCountInSelectedRange - noMergeCount)
       }
     }
 
-    return chartDataset
+    return merged
   }
 
   return (
@@ -176,9 +179,9 @@ function PullRequestsPage(prop) {
           size="small"
           project={currentProject}
         />
-        <p>
-          <h2>{currentProject.projectName}</h2>
-        </p>
+        <h2>
+          <p>{currentProject.projectName}</p>
+        </h2>
       </div>
 
       {/* Pull-Request Chart */}
