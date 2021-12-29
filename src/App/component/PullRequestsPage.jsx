@@ -104,7 +104,7 @@ function PullRequestsPage(prop) {
 
   const getPRCreatedCountArray = () => {
     const { startMonth, endMonth } = prop
-    const prListSortedByCreatedAt = getPRListSortedBy(pullRequestListData, 'createdAt')
+    const prListSortedByCreatedAt = getPRListSortedBy([].slice.call(pullRequestListData), 'createdAt')
     const created = []
 
     if (prListSortedByCreatedAt.length > 0) {
@@ -122,7 +122,7 @@ function PullRequestsPage(prop) {
 
   const getPRClosedCountArray = () => {
     const { startMonth, endMonth } = prop
-    const prListSortedByClosedAt = getPRListSortedBy(pullRequestListData, 'closedAt')
+    const prListSortedByClosedAt = getPRListSortedBy([].slice.call(pullRequestListData), 'closedAt')
     const closed = []
     let noCloseCount
 
@@ -145,7 +145,7 @@ function PullRequestsPage(prop) {
 
   const getPRMergedCountArray = () => {
     const { startMonth, endMonth } = prop
-    const prListSortedByMergedAt = getPRListSortedBy(pullRequestListData, 'mergedAt')
+    const prListSortedByMergedAt = getPRListSortedBy([].slice.call(pullRequestListData), 'mergedAt')
     const merged = []
     let noMergeCount
 
