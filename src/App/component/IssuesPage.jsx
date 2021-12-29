@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 function IssuesPage(prop) {
   const classes = useStyles()
   const [issueListData, setIssueListData] = useState([])
-  const [dataForIssueChart, setDataForIssueChart] = useState({ labels: [], data: { created: [], closed: [] } })
+  const [dataForIssueChart, setDataForIssueChart] = useState({ labels: [], data: { closed: [], created: [] } })
 
   const [currentProject, setCurrentProject] = useState({})
 
@@ -100,36 +100,56 @@ function IssuesPage(prop) {
   }, [currentProject, prop.startMonth, prop.endMonth])
 
   useEffect(() => {
+    const chartDataset = generateIssueDataSet()
+    setDataForIssueChart(chartDataset)
+  }, [issueListData])
+
+  const generateIssueDataSet = () => {
     const { startMonth, endMonth } = prop
-    let chartDataset = { labels: [], data: { created: [], closed: [] } }
+    let chartDataset = { labels: [], data: { closed: [] , created: []} }
+    for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
+      chartDataset.labels.push(month.format("YYYY-MM"))
+    }
+    chartDataset.data.created = getIssueCreatedCount()
+    chartDataset.data.closed = getIssueClosedCount()
+
+    return chartDataset
+  }
+
+  const getIssueCreatedCount = () => {
+    const { startMonth, endMonth } = prop
+    let created = []
     let issueListDataSortedByCreatedAt = issueListData
-    let issueListDataSortedByClosedAt = issueListData
-
     issueListDataSortedByCreatedAt.sort((a, b) => a.createdAt - b.createdAt)
-    issueListDataSortedByClosedAt.sort((a, b) => a.closedAt - b.closedAt)
-
     if (issueListDataSortedByCreatedAt.length > 0) {
-      for (let month = moment(startMonth); month <= moment(endMonth).add(1, 'months'); month = month.add(1, 'months')) {
-        console.log(month.month(), month.year())
-        let issueCountInSelectedRange
-        let noCloseCount = 0
-        chartDataset.labels.push(month.format("YYYY-MM"))
-
-        issueCountInSelectedRange = issueListDataSortedByCreatedAt.findIndex(issue => {
+      for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
+        const issueCountInSelectedRange = issueListDataSortedByCreatedAt.findIndex(issue => {
           return moment(issue.createdAt).year() > month.year() || moment(issue.createdAt).year() === month.year() && moment(issue.createdAt).month() > month.month()
         })
-        chartDataset.data.created.push(issueCountInSelectedRange === -1 ? issueListData.length : issueCountInSelectedRange)
+        created.push(issueCountInSelectedRange === -1 ? issueListData.length : issueCountInSelectedRange)
+      }
+    }
+    return created
+  }
 
-        issueCountInSelectedRange = issueListDataSortedByClosedAt.findIndex(issue => {
-          console.log('issue month year', moment(issue.closedAt).month(), moment(issue.closedAt).year())
+  const getIssueClosedCount = () => {
+    const { startMonth, endMonth } = prop
+    let closed = []
+    let issueListDataSortedByClosedAt = issueListData
+    issueListDataSortedByClosedAt.sort((a, b) => a.closedAt - b.closedAt)
+    if (issueListDataSortedByClosedAt.length > 0) {
+      for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
+        let noCloseCount = 0
+
+        const issueCountInSelectedRange = issueListDataSortedByClosedAt.findIndex(issue => {
           if (issue.closedAt == null) noCloseCount += 1
           return moment(issue.closedAt).year() > month.year() || moment(issue.closedAt).year() === month.year() && moment(issue.closedAt).month() > month.month()
         })
-        chartDataset.data.closed.push(issueCountInSelectedRange === -1 ? issueListData.length - noCloseCount : issueCountInSelectedRange - noCloseCount)
+        closed.push(issueCountInSelectedRange === -1 ? issueListData.length - noCloseCount : issueCountInSelectedRange - noCloseCount)
       }
     }
-    setDataForIssueChart(chartDataset)
-  }, [issueListData])
+    return closed
+  }
 
   return (
     <div style={{ marginLeft: "10px" }}>
