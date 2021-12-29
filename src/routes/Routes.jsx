@@ -5,6 +5,7 @@ import CommitsPage from '../App/component/CommitsPage'
 import IssuesPage from '../App/component/IssuesPage'
 import PullRequestsPage from '../App/component/PullRequestsPage'
 import CodeBasePage from '../App/component/CodeBasePage'
+import ComparisonPage from '../App/component/ComparisonPage'
 import ContributionPage from '../App/component/ContributionPage'
 import CodeCoveragePage from '../App/component/CodeCoveragePage'
 import BugsPage from '../App/component/BugsPage'
@@ -21,6 +22,7 @@ const routes = [
   { path: "/issues", component: IssuesPage, loginRequired: true },
   { path: "/pull_requests", component: PullRequestsPage, loginRequired: true },
   { path: "/codebase", component: CodeBasePage, loginRequired: true },
+  { path: "/comparison", component: ComparisonPage, loginRequired: true },
   { path: "/contribution", component: ContributionPage, loginRequired: true },
   { path: "/code_coverage", component: CodeCoveragePage, loginRequired: true },
   { path: "/bugs", component: BugsPage, loginRequired: true },

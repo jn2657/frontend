@@ -37,6 +37,7 @@ function ContributionPage(prop) {
   const classes = useStyles()
   const [commitListData, setCommitListData] = useState([])
   const [dataForMemberCommitPieChart, setDataForMemberCommitPieChart] = useState({ data: [] })
+  const [dataForMemberCommitBarChart, setDataForMemberCommitBarChart] = useState({ data: [] })
   const [currentProject, setCurrentProject] = useState({})
 
   const [open, setOpen] = useState(false);
@@ -176,13 +177,38 @@ function ContributionPage(prop) {
     })
   }, [commitListData])
 
+  // Generate code base bar chart
+  useEffect(() => {
+    let chartDataset_Addition = {
+      labels: [],
+      data: {}
+    }
+    let chartDataset_Deletion = {
+      labels: [],
+      data: {}
+    }
+    new Set(commitListData.map(commit => commit.authorName)).forEach(author => {
+      chartDataset_Addition.data[author] = 0
+      chartDataset_Addition.labels.push(author)
+      chartDataset_Deletion.data[author] = 0
+      chartDataset_Deletion.labels.push(author)
+    })
+    commitListData.forEach(commitData => {
+      chartDataset_Addition.data[commitData.authorName] += commitData.additions
+      chartDataset_Deletion.data[commitData.authorName] += commitData.deletions
+    })
+    setDataForMemberCommitBarChart([["Member", "Additions", "Deletions"]])
+    chartDataset_Addition.labels.forEach(member => {
+      setDataForMemberCommitBarChart(previousArray => [...previousArray, [member.replace("\"", "").replace("\"", ""), chartDataset_Addition.data[member], chartDataset_Deletion.data[member]]])
+    })
+  }, [commitListData])
+
   if (!projectId) {
     return (
       <Redirect to="/select" />
     )
   }
 
-  //return commit charts
   return (
     <div style={{ marginLeft: "10px" }}>
       <Backdrop className={classes.backdrop} open={open}>
@@ -220,9 +246,23 @@ function ContributionPage(prop) {
             loader={<div>Loading Chart</div>}
             data={dataForMemberCommitPieChart}
             options={{
-              // title: "Commit Number",
               is3D: true, // 3D chart style
               backgroundColor: 'transparent',
+              height: '300px',
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Code Base Bar Chart */}
+      <div className={classes.root}>
+        <div style={{ width: "67%" }}>
+          <h1>Code Base of Each Member</h1>
+          <Chart
+            chartType="Bar"
+            loader={<div>Loading Chart</div>}
+            data={dataForMemberCommitBarChart}
+            options={{
               height: '300px',
             }}
           />
