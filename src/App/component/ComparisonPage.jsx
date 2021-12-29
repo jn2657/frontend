@@ -178,7 +178,7 @@ function ComparisonPage(prop) {
 
     if (githubRepo !== undefined) {
       const query = githubRepo.url.split("github.com/")[1]
-      sendPVSBackendRequest('GET', `/github/commits/branchList/${query}`)
+      sendPVSBackendRequest('GET', `/github/branchList/${query}`)
         .then((responseData) => {
           if (responseData) {
             setBranchList(responseData)
@@ -192,7 +192,7 @@ function ComparisonPage(prop) {
 
     if (gitlabRepo !== undefined) {
       const query = gitlabRepo.url.split("gitlab.com/")[1]
-      sendPVSBackendRequest('GET', `/gitlab/commits/branchList/${query}`)
+      sendPVSBackendRequest('GET', `/gitlab/branchList/${query}`)
         .then((responseData) => {
           if (responseData) {
             setBranchList(responseData)
