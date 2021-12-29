@@ -32,108 +32,145 @@ function PullRequestsPage(prop) {
   const projectId = localStorage.getItem("projectId")
   const jwtToken = localStorage.getItem("jwtToken")
 
-  const [open, setOpen] = useState(false);
-  const handleClose = () => {
-    setOpen(false);
+  const [loading, setLoading] = useState(false);
+  const loadingEnd = () => {
+    setLoading(false);
   };
-  const handleToggle = () => {
-    setOpen(!open);
+  const loadingData = () => {
+    setLoading(!open);
   };
 
   useEffect(() => {
-    Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
-      { headers: { "Authorization": `${jwtToken}` } })
-      .then((response) => {
+    const fetchCurrentProject = async () => {
+      try {
+        const response = await Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
+        { headers: { "Authorization": `${jwtToken}` } })
         setCurrentProject(response.data)
-      })
-      .catch((e) => {
+      } catch (e) {
         alert(e.response?.status)
         console.error(e)
-      })
+      }
+    }
+    fetchCurrentProject()
   }, [])
 
-  const getPullRequestsFromGitHub = () => {
+  const getPullRequestsFromGitHub = async () => {
     const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
     if (githubRepo !== undefined) {
       const query = githubRepo.url.split("github.com/")[1]
-
-      // todo need reafctor with async
-      Axios.get(`http://localhost:9100/pvs-api/github/pullRequests/${query}`,
+      try {
+        const response = await Axios.get(`http://localhost:9100/pvs-api/github/pullRequests/${query}`,
         { headers: { "Authorization": `${jwtToken}` } })
-        .then((response) => {
-          if (response?.data) {
-            setPullRequestListData(response.data)
-          }
-        })
-        .catch((e) => {
-          alert(e.response?.status);
-          console.error(e)
-        })
+        setPullRequestListData(response.data)
+      } catch (e) {
+        alert(e.response?.status);
+        console.error(e)
+      }
     }
   }
 
   useEffect(() => {
     if (Object.keys(currentProject).length !== 0) {
-      handleToggle()
+      loadingData()
       getPullRequestsFromGitHub()
-      handleClose()
+      loadingEnd()
     }
   }, [currentProject, prop.startMonth, prop.endMonth])
 
+  // Sort data by the given key
+  const getPRListSortedBy = (prList, key) => prList.sort((prev, curr) => prev[key] - curr[key])
+
   // Generate the pull-request chart
   useEffect(() => {
-    const { startMonth, endMonth } = prop
-    let chartDataset = { labels: [], data: { merged: [], closed: [], opened: [] } }
-    let pullRequestListDataSortedByCreatedAt = pullRequestListData
-    let pullRequestListDataSortedByClosedAt = pullRequestListData
-    let pullRequestListDataSortedByMergedAt = pullRequestListData
+    const generateChartDataset = async () => {
+      const { startMonth, endMonth } = prop
+      let chartDataset = { labels: [], data: { merged: [], closed: [], opened: [] } };
 
-    // Sort data by date
-    if (pullRequestListData !== undefined) {
-      [].slice.call(pullRequestListDataSortedByCreatedAt).sort((a, b) => a.createdAt - b.createdAt);
-      [].slice.call(pullRequestListDataSortedByClosedAt).sort((a, b) => a.closedAt - b.closedAt);
-      [].slice.call(pullRequestListDataSortedByMergedAt).sort((a, b) => a.mergedAt - b.mergedAt);
+      for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
+        chartDataset.labels.push(month.format("YYYY-MM"))
+      }
+      
+      chartDataset = await getPRCreatedCount(chartDataset)
+      chartDataset = await getPRClosedCount(chartDataset)
+      chartDataset = await getPRMergedCount(chartDataset)
+
+      return chartDataset
     }
 
-    if (pullRequestListDataSortedByCreatedAt.length > 0) {
-      // Calculate the number of pull requests for each month in the selected range
-      for (let month = moment(startMonth); month < moment(endMonth).add(1, 'months'); month = month.add(1, 'months')) {
-        let index
-        let noCloseCount = 0  // Number of pull requests without 'closedAt' date
-        let noMergeCount = 0  // Number of pull requests without 'mergedAt' date
-        chartDataset.labels.push(month.format("YYYY-MM"))
+    generateChartDataset().then((chartDataset) => {
+      setDataForPullRequestChart(chartDataset)
+    })
+  }, [pullRequestListData, prop.startMonth, prop.endMonth])
 
-        index = pullRequestListDataSortedByCreatedAt.findIndex(pullRequest => {
+  const getPRCreatedCount = (chartDataset) => {
+    const { startMonth, endMonth } = prop
+    const prListSortedByCreatedAt = getPRListSortedBy(pullRequestListData, 'createdAt')
+
+    if (prListSortedByCreatedAt.length > 0) {
+      // Number of pull requests in each month
+      for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
+        const prCountInSelectedRange = prListSortedByCreatedAt.findIndex(pullRequest => {
           return moment(pullRequest.createdAt).year() > month.year() || moment(pullRequest.createdAt).year() === month.year() && moment(pullRequest.createdAt).month() > month.month()
         })
-        chartDataset.data.opened.push(index === -1 ? pullRequestListData.length : index)
+        chartDataset.data.opened.push(prCountInSelectedRange === -1 ? pullRequestListData.length : prCountInSelectedRange)
+      }
+    }
 
-        index = pullRequestListDataSortedByClosedAt.findIndex(pullRequest => {
+    return chartDataset
+  }
+
+  const getPRClosedCount = (chartDataset) => {
+    const { startMonth, endMonth } = prop
+    const prListSortedByClosedAt = getPRListSortedBy(pullRequestListData, 'closedAt')
+    let noCloseCount
+
+    if (prListSortedByClosedAt.length > 0) {
+      // Number of pull requests in each month
+      for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
+        noCloseCount = 0 // Number of pull requests without 'closedAt' date
+        const prCountInSelectedRange = prListSortedByClosedAt.findIndex(pullRequest => {
           if (pullRequest.closedAt == null) {
             noCloseCount += 1
           }
           return moment(pullRequest.closedAt).year() > month.year() || moment(pullRequest.closedAt).year() === month.year() && moment(pullRequest.closedAt).month() > month.month()
         })
-        chartDataset.data.closed.push(index === -1 ? pullRequestListData.length - noCloseCount : index)
+        chartDataset.data.closed.push(prCountInSelectedRange === -1 ? pullRequestListData.length - noCloseCount : prCountInSelectedRange - noCloseCount)
+      }
+    }
 
-        index = pullRequestListDataSortedByMergedAt.findIndex(pullRequest => {
-          console.log(moment(pullRequest.mergedAt).month())
+    return chartDataset
+  }
+
+  const getPRMergedCount = (chartDataset) => {
+    const { startMonth, endMonth } = prop
+    const prListSortedByMergedAt = getPRListSortedBy(pullRequestListData, 'mergedAt')
+    let noMergeCount
+
+    if (prListSortedByMergedAt.length > 0) {
+      // Number of pull requests in each month
+      for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
+        noMergeCount = 0 // Number of pull requests without 'mergedAt' date
+        const prCountInSelectedRange = prListSortedByMergedAt.findIndex(pullRequest => {
           if (pullRequest.mergedAt == null) {
             noMergeCount += 1
           }
           return moment(pullRequest.mergedAt).year() > month.year() || moment(pullRequest.mergedAt).year() === month.year() && moment(pullRequest.mergedAt).month() > month.month()
         })
-        chartDataset.data.merged.push(index === -1 ? pullRequestListData.length - noMergeCount : index)
+        chartDataset.data.merged.push(prCountInSelectedRange === -1 ? pullRequestListData.length - noMergeCount : prCountInSelectedRange - noMergeCount)
       }
     }
-    setDataForPullRequestChart(chartDataset)
-  }, [pullRequestListData, prop.startMonth, prop.endMonth])
+
+    return chartDataset
+  }
 
   return (
     <div style={{ marginLeft: "10px" }}>
-      <Backdrop className={classes.backdrop} open={open}>
+      {/* Loading Animation */}
+      <Backdrop className={classes.backdrop} open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>
+
+      {/* Project Avatar & Project Name */}
       <div className={classes.root}>
         <ProjectAvatar
           size="small"
