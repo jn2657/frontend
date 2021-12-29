@@ -100,7 +100,7 @@ function IssuesPage(prop) {
   }, [currentProject, prop.startMonth, prop.endMonth])
 
   useEffect(() => {
-    const { endMonth } = prop
+    const { startMonth, endMonth } = prop
     let chartDataset = { labels: [], data: { created: [], closed: [] } }
     let issueListDataSortedByCreatedAt = issueListData
     let issueListDataSortedByClosedAt = issueListData
@@ -109,19 +109,23 @@ function IssuesPage(prop) {
     issueListDataSortedByClosedAt.sort((a, b) => a.closedAt - b.closedAt)
 
     if (issueListDataSortedByCreatedAt.length > 0) {
-      for (let month = moment(issueListDataSortedByCreatedAt[0].createdAt); month <= moment(endMonth).add(1, 'months'); month = month.add(1, 'months')) {
-        let index
+      for (let month = moment(startMonth); month <= moment(endMonth).add(1, 'months'); month = month.add(1, 'months')) {
+        console.log(month.month(), month.year())
+        let issueCountInSelectedRange
+        let noCloseCount = 0
         chartDataset.labels.push(month.format("YYYY-MM"))
 
-        index = issueListDataSortedByCreatedAt.findIndex(issue => {
+        issueCountInSelectedRange = issueListDataSortedByCreatedAt.findIndex(issue => {
           return moment(issue.createdAt).year() > month.year() || moment(issue.createdAt).year() === month.year() && moment(issue.createdAt).month() > month.month()
         })
-        chartDataset.data.created.push(index === -1 ? issueListData.length : index)
+        chartDataset.data.created.push(issueCountInSelectedRange === -1 ? issueListData.length : issueCountInSelectedRange)
 
-        index = issueListDataSortedByClosedAt.findIndex(issue => {
+        issueCountInSelectedRange = issueListDataSortedByClosedAt.findIndex(issue => {
+          console.log('issue month year', moment(issue.closedAt).month(), moment(issue.closedAt).year())
+          if (issue.closedAt == null) noCloseCount += 1
           return moment(issue.closedAt).year() > month.year() || moment(issue.closedAt).year() === month.year() && moment(issue.closedAt).month() > month.month()
         })
-        chartDataset.data.closed.push(index === -1 ? issueListData.length : index)
+        chartDataset.data.closed.push(issueCountInSelectedRange === -1 ? issueListData.length - noCloseCount : issueCountInSelectedRange - noCloseCount)
       }
     }
     setDataForIssueChart(chartDataset)
@@ -158,6 +162,7 @@ function IssuesPage(prop) {
 
 const mapStateToProps = (state) => {
   return {
+    startMonth: state.selectedMonth.startMonth,
     endMonth: state.selectedMonth.endMonth
   }
 }
