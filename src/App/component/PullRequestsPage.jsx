@@ -89,9 +89,9 @@ function PullRequestsPage(prop) {
       chartDataset.labels.push(month.format("YYYY-MM"))
     }
     
-    chartDataset.data.created = pushPRCreatedCount()
-    chartDataset.data.closed = pushPRClosedCount()
-    chartDataset.data.merged = pushPRMergedCount()
+    chartDataset.data.created = getPRCreatedCountArray()
+    chartDataset.data.closed = getPRClosedCountArray()
+    chartDataset.data.merged = getPRMergedCountArray()
 
     return chartDataset
   }
@@ -102,7 +102,7 @@ function PullRequestsPage(prop) {
     setDataForPullRequestChart(chartDataset)
   }, [pullRequestListData, prop.startMonth, prop.endMonth])
 
-  const pushPRCreatedCount = () => {
+  const getPRCreatedCountArray = () => {
     const { startMonth, endMonth } = prop
     const prListSortedByCreatedAt = getPRListSortedBy(pullRequestListData, 'createdAt')
     const created = []
@@ -120,7 +120,7 @@ function PullRequestsPage(prop) {
     return created
   }
 
-  const pushPRClosedCount = () => {
+  const getPRClosedCountArray = () => {
     const { startMonth, endMonth } = prop
     const prListSortedByClosedAt = getPRListSortedBy(pullRequestListData, 'closedAt')
     const closed = []
@@ -143,7 +143,7 @@ function PullRequestsPage(prop) {
     return closed
   }
 
-  const pushPRMergedCount = () => {
+  const getPRMergedCountArray = () => {
     const { startMonth, endMonth } = prop
     const prListSortedByMergedAt = getPRListSortedBy(pullRequestListData, 'mergedAt')
     const merged = []
