@@ -18,7 +18,7 @@ import {
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { SiGithub, SiSonarqube, SiGitlab, SiTrello } from 'react-icons/si'
 
-export default function AddRepositoryDialog({ open, reloadProjects, handleClose, projectId }) {
+export default function AddRepositoryDialog({ open, reloadProjects, handleClose, projectId, hasGitRepo }) {
 
   const [repositoryURL, setRepositoryURL] = useState("")
   const [repoType, setRepoType] = useState("")
@@ -163,9 +163,9 @@ export default function AddRepositoryDialog({ open, reloadProjects, handleClose,
         <FormControl component="fieldset">
           <FormLabel component="legend" />
           <RadioGroup row aria-label="repositoryType" name="row-radio-buttons-group">
-            <FormControlLabel value="github" control={<Radio />} onChange={selected} label="GitHub" />
-            <FormControlLabel value="gitlab" control={<Radio />} onChange={selected} label="GitLab" />
-            <FormControlLabel value="sonar" control={<Radio />} onChange={selected} label="SonarQube" />
+            <FormControlLabel value="github" disabled={hasGitRepo} control={<Radio />} onChange={selected} label="GitHub" />
+            <FormControlLabel value="gitlab" disabled={hasGitRepo} control={<Radio />} onChange={selected} label="GitLab" />
+            <FormControlLabel value="sonar"  control={<Radio />} onChange={selected} label="SonarQube" />
             <FormControlLabel value="trello" control={<Radio />} onChange={selected} label="Trello" />
             <FormControlLabel
               value="disabled"
