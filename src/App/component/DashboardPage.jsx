@@ -1,19 +1,34 @@
-import {useEffect, useState} from 'react'
+import {lazy, Suspense, useEffect, useMemo, useState} from 'react'
 import {makeStyles} from '@material-ui/core/styles'
 import ProjectAvatar from './ProjectAvatar'
 import Axios from 'axios'
 
+const SonarMetrics = lazy(() => import('./SonarMetrics'))
+
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
+    alignItems: 'flex-start',
+    alignContent: 'flex-start',
+    flexWrap: 'wrap',
     '& > *': {
       margin: theme.spacing(1),
     },
     minWidth: '30px',
+    width: 'auto',
+    height: '100vh'
   },
-  backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
-    color: '#fff',
+  title: {
+    display: 'inline-block',
+    marginLeft: '15px',
+    marginRight: '15px'
+  },
+  avatar: {
+    display: 'inline-block'
+  },
+  header: {
+    display: 'flex',
+    width: '100%'
   },
 }))
 
@@ -25,11 +40,18 @@ function DashboardPage() {
   const projectId = localStorage.getItem("projectId")
   const jwtToken = localStorage.getItem("jwtToken")
 
+  const sonarId = useMemo(() => {
+    const dto = currentProject?.repositoryDTOList?.find(dto => dto.type === 'sonar')
+    return dto?.url && (new URL(dto.url)).searchParams.get('id')
+  }, [currentProject])
+
   useEffect(() => {
     Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
       {headers: {"Authorization": `${jwtToken}`}})
       .then((response) => {
-        setCurrentProject(response.data)
+        if (response?.data) {
+          setCurrentProject(response.data)
+        }
       })
       .catch((e) => {
         alert(e.response.status)
@@ -39,13 +61,20 @@ function DashboardPage() {
 
   return (
     <div className={classes.root}>
-      <ProjectAvatar
-        size="small"
-        project={currentProject}
-      />
-      <p>
-        <h2>{currentProject ? currentProject.projectName : ""}</h2>
-      </p>
+      <header className={classes.header}>
+        <ProjectAvatar
+          size="small"
+          project={currentProject}
+          className={classes.avatar}
+        />
+        <h2 className={classes.title}>{currentProject ? currentProject.projectName : ""}</h2>
+      </header>
+      {
+        sonarId &&
+        <Suspense fallback={<div>Loading Sonar Metrics...</div>}>
+          <SonarMetrics sonarComponentName={sonarId}/>
+        </Suspense>
+      }
     </div>
   )
 }
