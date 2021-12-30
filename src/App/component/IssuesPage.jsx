@@ -100,26 +100,26 @@ function IssuesPage(prop) {
   }, [currentProject, prop.startMonth, prop.endMonth])
 
   useEffect(() => {
-    const chartDataset = generateIssueDataSet()
+    const chartDataset = generateIssueChartDataset()
     setDataForIssueChart(chartDataset)
   }, [issueListData])
 
-  const generateIssueDataSet = () => {
+  const generateIssueChartDataset = () => {
     const { startMonth, endMonth } = prop
-    let chartDataset = { labels: [], data: { closed: [] , created: []} }
+    const chartDataset = { labels: [], data: { closed: [] , created: []} }
     for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
       chartDataset.labels.push(month.format("YYYY-MM"))
     }
-    chartDataset.data.created = getIssueCreatedCount()
-    chartDataset.data.closed = getIssueClosedCount()
+    chartDataset.data.created = getIssueCreatedCountArray()
+    chartDataset.data.closed = getIssueClosedCountArray()
 
     return chartDataset
   }
 
-  const getIssueCreatedCount = () => {
+  const getIssueCreatedCountArray = () => {
     const { startMonth, endMonth } = prop
-    let created = []
-    let issueListDataSortedByCreatedAt = issueListData
+    const created = []
+    const issueListDataSortedByCreatedAt = issueListData
     issueListDataSortedByCreatedAt.sort((a, b) => a.createdAt - b.createdAt)
     if (issueListDataSortedByCreatedAt.length > 0) {
       for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
@@ -132,10 +132,10 @@ function IssuesPage(prop) {
     return created
   }
 
-  const getIssueClosedCount = () => {
+  const getIssueClosedCountArray = () => {
     const { startMonth, endMonth } = prop
-    let closed = []
-    let issueListDataSortedByClosedAt = issueListData
+    const closed = []
+    const issueListDataSortedByClosedAt = issueListData
     issueListDataSortedByClosedAt.sort((a, b) => a.closedAt - b.closedAt)
     if (issueListDataSortedByClosedAt.length > 0) {
       for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
