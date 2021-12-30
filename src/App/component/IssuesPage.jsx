@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 function IssuesPage(prop) {
   const classes = useStyles()
   const [issueListData, setIssueListData] = useState([])
-  const [dataForIssueChart, setDataForIssueChart] = useState({ labels: [], data: { created: [], closed: [] } })
+  const [dataForIssueChart, setDataForIssueChart] = useState({ labels: [], data: { closed: [], created: [] } })
 
   const [currentProject, setCurrentProject] = useState({})
 
@@ -100,32 +100,56 @@ function IssuesPage(prop) {
   }, [currentProject, prop.startMonth, prop.endMonth])
 
   useEffect(() => {
-    const { endMonth } = prop
-    let chartDataset = { labels: [], data: { created: [], closed: [] } }
-    let issueListDataSortedByCreatedAt = issueListData
-    let issueListDataSortedByClosedAt = issueListData
-
-    issueListDataSortedByCreatedAt.sort((a, b) => a.createdAt - b.createdAt)
-    issueListDataSortedByClosedAt.sort((a, b) => a.closedAt - b.closedAt)
-
-    if (issueListDataSortedByCreatedAt.length > 0) {
-      for (let month = moment(issueListDataSortedByCreatedAt[0].createdAt); month <= moment(endMonth).add(1, 'months'); month = month.add(1, 'months')) {
-        let index
-        chartDataset.labels.push(month.format("YYYY-MM"))
-
-        index = issueListDataSortedByCreatedAt.findIndex(issue => {
-          return moment(issue.createdAt).year() > month.year() || moment(issue.createdAt).year() === month.year() && moment(issue.createdAt).month() > month.month()
-        })
-        chartDataset.data.created.push(index === -1 ? issueListData.length : index)
-
-        index = issueListDataSortedByClosedAt.findIndex(issue => {
-          return moment(issue.closedAt).year() > month.year() || moment(issue.closedAt).year() === month.year() && moment(issue.closedAt).month() > month.month()
-        })
-        chartDataset.data.closed.push(index === -1 ? issueListData.length : index)
-      }
-    }
+    const chartDataset = generateIssueChartDataset()
     setDataForIssueChart(chartDataset)
   }, [issueListData])
+
+  const generateIssueChartDataset = () => {
+    const { startMonth, endMonth } = prop
+    const chartDataset = { labels: [], data: { closed: [] , created: []} }
+    for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
+      chartDataset.labels.push(month.format("YYYY-MM"))
+    }
+    chartDataset.data.created = getIssueCreatedCountArray()
+    chartDataset.data.closed = getIssueClosedCountArray()
+
+    return chartDataset
+  }
+
+  const getIssueCreatedCountArray = () => {
+    const { startMonth, endMonth } = prop
+    const created = []
+    const issueListDataSortedByCreatedAt = issueListData
+    issueListDataSortedByCreatedAt.sort((a, b) => a.createdAt - b.createdAt)
+    if (issueListDataSortedByCreatedAt.length > 0) {
+      for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
+        const issueCountInSelectedRange = issueListDataSortedByCreatedAt.findIndex(issue => {
+          return moment(issue.createdAt).year() > month.year() || moment(issue.createdAt).year() === month.year() && moment(issue.createdAt).month() > month.month()
+        })
+        created.push(issueCountInSelectedRange === -1 ? issueListData.length : issueCountInSelectedRange)
+      }
+    }
+    return created
+  }
+
+  const getIssueClosedCountArray = () => {
+    const { startMonth, endMonth } = prop
+    const closed = []
+    const issueListDataSortedByClosedAt = issueListData
+    issueListDataSortedByClosedAt.sort((a, b) => a.closedAt - b.closedAt)
+    if (issueListDataSortedByClosedAt.length > 0) {
+      for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
+        let noCloseCount = 0
+
+        const issueCountInSelectedRange = issueListDataSortedByClosedAt.findIndex(issue => {
+          if (issue.closedAt == null) noCloseCount += 1
+          return moment(issue.closedAt).year() > month.year() || moment(issue.closedAt).year() === month.year() && moment(issue.closedAt).month() > month.month()
+        })
+        closed.push(issueCountInSelectedRange === -1 ? issueListData.length - noCloseCount : issueCountInSelectedRange - noCloseCount)
+      }
+    }
+    return closed
+  }
 
   return (
     <div style={{ marginLeft: "10px" }}>
@@ -158,6 +182,7 @@ function IssuesPage(prop) {
 
 const mapStateToProps = (state) => {
   return {
+    startMonth: state.selectedMonth.startMonth,
     endMonth: state.selectedMonth.endMonth
   }
 }
