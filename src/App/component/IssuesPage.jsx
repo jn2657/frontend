@@ -9,6 +9,9 @@ import { connect } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    marginLeft: '10px'
+  },
+  chart: {
     display: 'flex',
     '& > *': {
       margin: theme.spacing(1),
@@ -19,6 +22,19 @@ const useStyles = makeStyles((theme) => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: '#fff',
+  },
+  title: {
+    display: 'flex',
+    marginLeft: '15px',
+    marginRight: '15px',
+    alignItems: 'center',
+  },
+  avatar: {
+    display: 'inline-block'
+  },
+  header: {
+    display: 'flex',
+    width: '100%'
   },
 }))
 
@@ -152,21 +168,19 @@ function IssuesPage(prop) {
   }
 
   return (
-    <div style={{ marginLeft: "10px" }}>
+    <div className={classes.root}>
       <Backdrop className={classes.backdrop} open={open}>
         <CircularProgress color="inherit" />
       </Backdrop>
-      <div className={classes.root}>
+      <header className={classes.header}>
         <ProjectAvatar
           size="small"
           project={currentProject}
+          className={classes.avatar}
         />
-        <p>
-          <h2>{currentProject.projectName}</h2>
-
-        </p>
-      </div>
-      <div className={classes.root}>
+        <h2 className={classes.title}>{currentProject ? currentProject.projectName : ""}</h2>
+      </header>
+      <div className={classes.chart}>
         <div style={{ width: "67%" }}>
           <div>
             <h1>Team</h1>
