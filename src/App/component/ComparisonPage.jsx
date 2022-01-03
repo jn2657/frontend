@@ -276,7 +276,6 @@ function ComparisonPage(prop) {
         }
       }
     }
-    console.log(leftBranchSelected, rightBranchSelected)
     setDataForTeamCommitChart(chartDataset)
   }, [commitListDataRight, prop.startMonth, prop.endMonth, leftBranchSelected, rightBranchSelected])
 
