@@ -49,6 +49,7 @@ dependencies:
   '@progress/kendo-theme-material': 4.43.0
   axios: 0.24.0
   chart.js: 3.7.0
+  clsx: 1.1.1
   moment: 2.29.1
   prop-types: 15.7.2
   react: 17.0.2
@@ -70,7 +71,6 @@ devDependencies:
   '@testing-library/jest-dom': 5.16.1
   '@testing-library/react': 12.1.2_react-dom@17.0.2+react@17.0.2
   '@testing-library/user-event': 13.5.0_@testing-library+dom@8.11.1
-  clsx: 1.1.1
   eslint: 8.6.0
   eslint-plugin-react: 7.28.0_eslint@8.6.0
 
@@ -3673,6 +3673,7 @@ packages:
   /clsx/1.1.1:
     resolution: {integrity: sha512-6/bPho624p3S2pMyvP5kKBPXnI3ufHLObBFCfgx+LkeR5lg2XYy2hqZqUf45ypD8COn2bhgGJSUE+l5dhNBieA==}
     engines: {node: '>=6'}
+    dev: false
 
   /co/4.6.0:
     resolution: {integrity: sha1-bqa989hTrlTMuOR7+gvz+QMfsYQ=}
