@@ -12,7 +12,8 @@ import {
   RadioGroup,
   FormControl,
   FormLabel,
-  FormControlLabel
+  FormControlLabel,
+  FormHelperText
 } from '@material-ui/core'
 
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -143,6 +144,20 @@ export default function AddRepositoryDialog({ open, reloadProjects, handleClose,
             ),
           }}
         />
+        <FormHelperText id="helper-text">
+          {repoType === "github" &&
+            <p>Ex: https://github.com/USER/REPO</p>
+          }
+          {repoType === "gitlab" &&
+            <p>Ex: https://gitlab.com/USER/REPO</p>
+          }
+          {repoType === "sonar" &&
+            <p>Ex: https://sonarcloud.io/project/overview?id=ID</p>
+          }
+          {repoType === "trello" &&
+            <p>Ex: https://trello.com/b/abcdef/BOARD_NAME</p>
+          }
+        </FormHelperText>
       </div>
     )
   }

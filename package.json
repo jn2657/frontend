@@ -23,7 +23,13 @@
     "react-is": "17.0.2",
     "styled-components": "^5.3.3",
     "redux": "^4.1.1",
-    "react-google-charts": "3.0.15"
+    "react-google-charts": "3.0.15",
+    "@progress/kendo-licensing": "^1.2.0",
+    "@progress/kendo-react-animation": "^4.8.0",
+    "@progress/kendo-react-intl": "^4.8.0",
+    "@progress/kendo-react-layout": "^4.8.0",
+    "@progress/kendo-react-progressbars": "^4.8.0",
+    "@progress/kendo-theme-material": "^4.40.1"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.14.1",
