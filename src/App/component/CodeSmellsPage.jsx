@@ -56,7 +56,7 @@ function CodeSmellsPage(prop) {
     if (currentProject !== undefined) {
       let repositoryDTO = currentProject.repositoryDTOList.find(x => x.type === "sonar")
       let sonarComponent = repositoryDTO.url.split("id=")[1]
-      setCodeSmellUrl(`http://140.124.181.143:9000/project/issues?id=${sonarComponent}&resolved=false&types=CODE_SMELL`)
+      setCodeSmellUrl(`https://sonarcloud.io/project/issues?id=${sonarComponent}&resolved=false&types=CODE_SMELL`)
       Axios.get(`http://localhost:9100/pvs-api/sonar/${sonarComponent}/code_smell`,
         {headers: {"Authorization": `${jwtToken}`}})
         .then((response) => {

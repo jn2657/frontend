@@ -55,7 +55,7 @@ function CodeCoveragePage(prop) {
     if (currentProject !== undefined) {
       let repositoryDTO = currentProject.repositoryDTOList.find(x => x.type === "sonar")
       let sonarComponent = repositoryDTO.url.split("id=")[1]
-      setCoverageUrl(`http://140.124.181.143:9000/component_measures?id=${sonarComponent}&metric=Coverage&view=list`)
+      setCoverageUrl(`https://sonarcloud.io/component_measures?id=${sonarComponent}&metric=Coverage&view=list`)
       Axios.get(`http://localhost:9100/pvs-api/sonar/${sonarComponent}/coverage`,
         {headers: {"Authorization": `${jwtToken}`}})
         .then((response) => {
