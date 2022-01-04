@@ -11,11 +11,17 @@ import { Button } from 'react-bootstrap'
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    marginLeft: '10px',
+  },
+  chartContainer: {
     display: 'flex',
     '& > *': {
       margin: theme.spacing(1),
     },
     minWidth: '30px',
+  },
+  chart: {
+    width: '67%',
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -30,7 +36,20 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     width: "67%",
     justifyContent: "space-between",
-  }
+  },
+  title: {
+    display: 'flex',
+    marginLeft: '15px',
+    marginRight: '15px',
+    alignItems: 'center',
+  },
+  avatar: {
+    display: 'inline-block'
+  },
+  header: {
+    display: 'flex',
+    width: '95%'
+  },
 }))
 
 function CommitsPage(prop) {
@@ -216,57 +235,51 @@ function CommitsPage(prop) {
 
   //return commit charts
   return (
-    <div style={{ marginLeft: "10px" }}>
+    <div className={classes.root}>
       <Backdrop className={classes.backdrop} open={open}>
         <CircularProgress color="inherit" />
       </Backdrop>
-      <div className={classes.buttonContainer}>
-
-        <span style={{ display: "flex", alignItems: "center" }}>
-          {/* Project Avatar*/}
+      <header className={classes.header}>
+        <div className={classes.header}>
           <ProjectAvatar
             size="small"
             project={currentProject}
+            className={classes.avatar}
           />
+          <h2 className={classes.title}>{currentProject ? currentProject.projectName : ""}</h2>
+        </div>
+        <div className={classes.buttonContainer}>
+          {/* Reload Button */}
+          <Button
+            disabled={isLoading}
+            onClick={!isLoading ? handleClick : null}
+          >
+            {isLoading ? 'Loading…' : 'reload commits'}
+          </Button>
+        </div>
+      </header>
 
-          {/* Project Name */}
-          <p style={{ margin: "0 1em" }}>
-            <h2>{currentProject ? currentProject.projectName : ""}</h2>
-          </p>
-        </span>
-
-        {/* Reload Button */}
-        <Button
-          disabled={isLoading}
-          onClick={!isLoading ? handleClick : null}
-        >
-          {isLoading ? 'Loading…' : 'reload commits'}
-        </Button>
-      </div>
-
-      <div className={classes.root}>
-        <div style={{ width: "67%" }}>
+      <div className={classes.chartContainer}>
+        <div className={classes.chart}>
+          <h1>Team</h1>
           <div>
-            <h1>Team</h1>
-            <div>
-              <DrawingBoard data={dataForTeamCommitChart} id="team-commit-chart" />
-            </div>
-            <div className={classes.root}>
-              <h1>Member</h1>
-              <Select
-                labelId="number-of-member-label"
-                id="number-of-member"
-                value={numberOfMember}
-                onChange={(e) => setNumberOfMember(e.target.value)}
-              >
-                <MenuItem value={5}>5</MenuItem>
-                <MenuItem value={10}>10</MenuItem>
-                <MenuItem value={15}>15</MenuItem>
-              </Select>
-            </div>
-            <div>
-              <DrawingBoard data={dataForMemberCommitChart} id="member-commit-chart" />
-            </div>
+            <DrawingBoard data={dataForTeamCommitChart} id="team-commit-chart" />
+          </div>
+          <div className={classes.chartContainer}>
+            <h1>Member</h1>
+            <Select
+              labelId="number-of-member-label"
+              id="number-of-member"
+              value={numberOfMember}
+              onChange={(e) => setNumberOfMember(e.target.value)}
+            >
+              <MenuItem value={5}>5</MenuItem>
+              <MenuItem value={10}>10</MenuItem>
+              <MenuItem value={15}>15</MenuItem>
+            </Select>
+          </div>
+          <div>
+            <DrawingBoard data={dataForMemberCommitChart} id="member-commit-chart" />
           </div>
         </div>
       </div>

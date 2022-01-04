@@ -11,6 +11,9 @@ import { Button } from 'react-bootstrap'
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    marginLeft: '10px',
+  },
+  chart: {
     display: 'flex',
     '& > *': {
       margin: theme.spacing(1),
@@ -46,7 +49,20 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     width: "67%",
     justifyContent: "space-between",
-  }
+  },
+  title: {
+    display: 'flex',
+    marginLeft: '15px',
+    marginRight: '15px',
+    alignItems: 'center',
+  },
+  avatar: {
+    display: 'inline-block'
+  },
+  header: {
+    display: 'flex',
+    width: '100%'
+  },
 }))
 
 function ComparisonPage(prop) {
@@ -245,22 +261,21 @@ function ComparisonPage(prop) {
     })
     for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
       chartDataset.labels.push(month.format("YYYY-MM"))
-          for (const branch in chartDataset.data) {
-            if (branch !== "") {
-                if (branch === leftBranchSelected) {
-                  chartDataset.data[branch].push(commitListDataLeft.filter(commit => {
-                    return moment(commit.committedDate).format("YYYY-MM") === month.format("YYYY-MM")
-                  }).length)
-                }
-                else if (branch === rightBranchSelected) {
-                  chartDataset.data[branch].push(commitListDataRight.filter(commit => {
-                    return moment(commit.committedDate).format("YYYY-MM") === month.format("YYYY-MM")
-                  }).length)
-                }
-            }
+      for (const branch in chartDataset.data) {
+        if (branch !== "") {
+          if (branch === leftBranchSelected) {
+            chartDataset.data[branch].push(commitListDataLeft.filter(commit => {
+              return moment(commit.committedDate).format("YYYY-MM") === month.format("YYYY-MM")
+            }).length)
           }
+          else if (branch === rightBranchSelected) {
+            chartDataset.data[branch].push(commitListDataRight.filter(commit => {
+              return moment(commit.committedDate).format("YYYY-MM") === month.format("YYYY-MM")
+            }).length)
+          }
+        }
+      }
     }
-    console.log(leftBranchSelected, rightBranchSelected)
     setDataForTeamCommitChart(chartDataset)
   }, [commitListDataRight, prop.startMonth, prop.endMonth, leftBranchSelected, rightBranchSelected])
 
@@ -272,70 +287,64 @@ function ComparisonPage(prop) {
   }
 
   return (
-    <div style={{ marginLeft: "10px" }}>
+    <div className={classes.root}>
       <Backdrop className={classes.backdrop} open={open}>
         <CircularProgress color="inherit" />
       </Backdrop>
-      <div className={classes.buttonContainer}>
-        <span style={{ display: "flex", alignItems: "center" }}>
-          {/* Project Avatar*/}
+      <header className={classes.header}>
+        <div className={classes.header}>
           <ProjectAvatar
             size="small"
             project={currentProject}
+            className={classes.avatar}
           />
-          {/* Project Name */}
-          <p style={{ margin: "0 1em" }}>
-            <h2>{currentProject ? currentProject.projectName : ""}</h2>
-          </p>
-        </span>
-        {/* Reload Button */}
-        <Button
-          disabled={isLoading}
-          onClick={!isLoading ? handleClick : null}
-        >
-          {isLoading ? 'Loading…' : 'reload commits'}
-        </Button>
-      </div>
-      <div className={classes.root}>
+          <h2 className={classes.title}>{currentProject ? currentProject.projectName : ""}</h2>
+        </div>
+        <div className={classes.buttonContainer}>
+          {/* Reload Button */}
+          <Button
+            disabled={isLoading}
+            onClick={!isLoading ? handleClick : null}
+          >
+            {isLoading ? 'Loading…' : 'reload commits'}
+          </Button>
+        </div>
+      </header>
+
+      <div className={classes.chart}>
         <div>
+          <h2>Number of Commits From Two Branches</h2>
+
+          <div className={classes.toLeft}>
+            <Select
+              className={classes.selectLeft}
+              labelId="list-of-branches-label"
+              id="list-of-branches"
+              value={leftBranchSelected}
+              onChange={(e) => leftDiagramUpdate(e.target.value)}
+            >
+              {branchList.map((name) => (
+                <MenuItem key={name} value={name}>{name}</MenuItem>
+              ))}
+            </Select>
+          </div>
+
+          <div className={classes.toRight}>
+            <Select
+              className={classes.selectRight}
+              labelId="list-of-branches-label"
+              id="list-of-branches"
+              value={rightBranchSelected}
+              onChange={(e) => rightDiagramUpdate(e.target.value)}
+            >
+              {branchList.map((name) => (
+                <MenuItem key={name} value={name}>{name}</MenuItem>
+              ))}
+            </Select>
+          </div>
+
           <div>
-            <h2>Number of Commits From Two Branches</h2>
-
-            <div className={classes.toLeft}>
-              <div className={classes.toLeft}>
-                <Select
-                  className={classes.selectLeft}
-                  labelId="list-of-branches-label"
-                  id="list-of-branches"
-                  value={leftBranchSelected}
-                  onChange={(e) => leftDiagramUpdate(e.target.value)}
-                >
-                  {branchList.map((name) => (
-                    <MenuItem key={name} value={name}>{name}</MenuItem>
-                  ))}
-                </Select>
-              </div>
-            </div>
-
-            <div className={classes.toRight}>
-              <div className={classes.toRight}>
-                <Select
-                  className={classes.selectRight}
-                  labelId="list-of-branches-label"
-                  id="list-of-branches"
-                  value={rightBranchSelected}
-                  onChange={(e) => rightDiagramUpdate(e.target.value)}
-                >
-                  {branchList.map((name) => (
-                    <MenuItem key={name} value={name}>{name}</MenuItem>
-                  ))}
-                </Select>
-              </div>
-            </div>
-
-            <div>
-              <DrawingBoard data={dataForTeamCommitChart} id="branches-commit-chart" />
-            </div>
+            <DrawingBoard data={dataForTeamCommitChart} id="branches-commit-chart" />
           </div>
         </div>
       </div>

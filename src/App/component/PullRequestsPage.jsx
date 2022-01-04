@@ -10,15 +10,34 @@ import { connect } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    marginLeft: '10px'
+  },
+  chartContainer: {
     display: 'flex',
     '& > *': {
       margin: theme.spacing(1),
     },
     minWidth: '30px',
   },
+  chart: {
+    width: '67%',
+  },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: '#fff',
+  },
+  title: {
+    display: 'flex',
+    marginLeft: '15px',
+    marginRight: '15px',
+    alignItems: 'center',
+  },
+  avatar: {
+    display: 'inline-block'
+  },
+  header: {
+    display: 'flex',
+    width: '100%'
   },
 }))
 
@@ -167,26 +186,24 @@ function PullRequestsPage(prop) {
   }
 
   return (
-    <div style={{ marginLeft: "10px" }}>
-      {/* Loading Animation */}
+    <div className={classes.root}>
       <Backdrop className={classes.backdrop} open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>
-
-      {/* Project Avatar & Project Name */}
-      <div className={classes.root}>
-        <ProjectAvatar
-          size="small"
-          project={currentProject}
-        />
-        <h2>
-          <p>{currentProject.projectName}</p>
-        </h2>
-      </div>
+      <header className={classes.header}>
+        <div className={classes.header}>
+          <ProjectAvatar
+            size="small"
+            project={currentProject}
+            className={classes.avatar}
+          />
+          <h2 className={classes.title}>{currentProject ? currentProject.projectName : ""}</h2>
+        </div>
+      </header>
 
       {/* Pull-Request Chart */}
-      <div className={classes.root}>
-        <div style={{ width: "67%" }}>
+      <div className={classes.chartContainer}>
+        <div className={classes.chart}>
           <div>
             <h1>Team</h1>
             <div>

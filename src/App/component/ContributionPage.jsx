@@ -10,11 +10,17 @@ import Chart from 'react-google-charts'
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    marginLeft: '10px',
+  },
+  chartContainer: {
     display: 'flex',
     '& > *': {
       margin: theme.spacing(1),
     },
     minWidth: '30px',
+  },
+  chart: {
+    width: '67%',
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -29,7 +35,20 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     width: "67%",
     justifyContent: "space-between",
-  }
+  },
+  title: {
+    display: 'flex',
+    marginLeft: '15px',
+    marginRight: '15px',
+    alignItems: 'center',
+  },
+  avatar: {
+    display: 'inline-block'
+  },
+  header: {
+    display: 'flex',
+    width: '95%'
+  },
 }))
 
 function ContributionPage(prop) {
@@ -210,36 +229,33 @@ function ContributionPage(prop) {
   }
 
   return (
-    <div style={{ marginLeft: "10px" }}>
+    <div className={classes.root}>
       <Backdrop className={classes.backdrop} open={open}>
         <CircularProgress color="inherit" />
       </Backdrop>
-      <div className={classes.buttonContainer}>
-
-        <span style={{ display: "flex", alignItems: "center" }}>
-          {/* Project Avatar*/}
+      <header className={classes.header}>
+        <div className={classes.header}>
           <ProjectAvatar
             size="small"
             project={currentProject}
+            className={classes.avatar}
           />
-          {/* Project Name */}
-          <p style={{ margin: "0 1em" }}>
-            <h2>{currentProject ? currentProject.projectName : ""}</h2>
-          </p>
-        </span>
-
-        {/* Reload Button */}
-        <Button
-          disabled={isLoading}
-          onClick={!isLoading ? handleClick : null}
-        >
-          {isLoading ? 'Loading…' : 'reload commits'}
-        </Button>
-      </div>
+          <h2 className={classes.title}>{currentProject ? currentProject.projectName : ""}</h2>
+        </div>
+        <div className={classes.buttonContainer}>
+          {/* Reload Button */}
+          <Button
+            disabled={isLoading}
+            onClick={!isLoading ? handleClick : null}
+          >
+            {isLoading ? 'Loading…' : 'reload commits'}
+          </Button>
+        </div>
+      </header>
 
       {/* Commit Pie Chart */}
-      <div className={classes.root}>
-        <div style={{ width: "67%" }}>
+      <div className={classes.chartContainer}>
+        <div className={classes.chart}>
           <h1>Commit Number of Each Member</h1>
           <Chart
             chartType="PieChart"
@@ -255,8 +271,8 @@ function ContributionPage(prop) {
       </div>
 
       {/* Code Base Bar Chart */}
-      <div className={classes.root}>
-        <div style={{ width: "67%" }}>
+      <div className={classes.chartContainer}>
+        <div className={classes.chart}>
           <h1>Code Base of Each Member</h1>
           <Chart
             chartType="Bar"

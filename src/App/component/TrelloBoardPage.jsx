@@ -7,6 +7,9 @@ import { createTranslate } from 'react-trello'
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    marginLeft: '10px'
+  },
+  boardContainer: {
     display: 'flex',
     '& > *': {
       margin: theme.spacing(1),
@@ -89,8 +92,8 @@ function TrelloBoardPage() {
   }, [currentProject])
 
   return (
-    <div style={{marginLeft: "10px"}}>
-      <div className={classes.root}>
+    <div className={classes.root}>
+      <div className={classes.boardContainer}>
         {hasBoardData &&
         <Board
           data={boardData}
