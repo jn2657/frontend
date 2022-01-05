@@ -19,13 +19,14 @@ import {
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { SiGithub, SiSonarqube, SiGitlab, SiTrello } from 'react-icons/si'
 
-export default function AddRepositoryDialog({ open, reloadProjects, handleClose, projectId, hasGitRepo }) {
+export default function AddRepositoryDialog({ open, reloadProjects, handleClose, projectId, hasGitRepo, hasSonar, hasTrello }) {
 
-  const [repositoryURL, setRepositoryURL] = useState("")
   const [repoType, setRepoType] = useState("")
   const jwtToken = localStorage.getItem("jwtToken")
 
   const [showDiv, setShowDiv] = useState(false)
+
+  let repositoryURL = ""
 
   const addRepository = () => {
     let checker = []
@@ -33,7 +34,7 @@ export default function AddRepositoryDialog({ open, reloadProjects, handleClose,
       alert("不準啦馬的>///<")
     } else {
 
-      checker.push(checkRepositoryURL());
+      checker.push(checkRepositoryURL(repositoryURL));
 
       Promise.all(checker)
         .then((response) => {
@@ -61,10 +62,10 @@ export default function AddRepositoryDialog({ open, reloadProjects, handleClose,
     }
   }
 
-  const checkRepositoryURL = async () => {
+  const checkRepositoryURL = async (url) => {
     if (repoType === "github") {
       try {
-        await Axios.get(`http://localhost:9100/pvs-api/repository/github/check?url=${repositoryURL}`,
+        await Axios.get(`http://localhost:9100/pvs-api/repository/github/check?url=${url}`,
           { headers: { "Authorization": `${jwtToken}` } });
         return true;
       } catch (e) {
@@ -75,7 +76,7 @@ export default function AddRepositoryDialog({ open, reloadProjects, handleClose,
 
     if (repoType === "gitlab") {
       try {
-        await Axios.get(`http://localhost:9100/pvs-api/repository/gitlab/check?url=${repositoryURL}`,
+        await Axios.get(`http://localhost:9100/pvs-api/repository/gitlab/check?url=${url}`,
           { headers: { "Authorization": `${jwtToken}` } });
         return true;
       } catch (e) {
@@ -86,7 +87,7 @@ export default function AddRepositoryDialog({ open, reloadProjects, handleClose,
 
     if (repoType === "sonar") {
       try {
-        await Axios.get(`http://localhost:9100/pvs-api/repository/sonar/check?url=${repositoryURL}`,
+        await Axios.get(`http://localhost:9100/pvs-api/repository/sonar/check?url=${url}`,
           { headers: { "Authorization": `${jwtToken}` } });
         return true;
       } catch (e) {
@@ -97,7 +98,7 @@ export default function AddRepositoryDialog({ open, reloadProjects, handleClose,
 
     if (repoType === "trello") {
       try {
-        await Axios.get(`http://localhost:9100/pvs-api/repository/trello/check?url=${repositoryURL}`,
+        await Axios.get(`http://localhost:9100/pvs-api/repository/trello/check?url=${url}`,
           { headers: { "Authorization": `${jwtToken}` } });
         return true;
       } catch (e) {
@@ -121,10 +122,9 @@ export default function AddRepositoryDialog({ open, reloadProjects, handleClose,
           label="Repository URL"
           type="text"
           fullWidth
-          onChange={(e) => {
-            setRepositoryURL(e.target.value)
-          }}
+          onChange={(e) => {repositoryURL=e.target.value}}
           required
+          autoFocus
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -163,7 +163,6 @@ export default function AddRepositoryDialog({ open, reloadProjects, handleClose,
   }
 
   useEffect(() => {
-    setRepositoryURL("")
     setRepoType("")
     setShowDiv(false)
   }, [open])
@@ -180,8 +179,8 @@ export default function AddRepositoryDialog({ open, reloadProjects, handleClose,
           <RadioGroup row aria-label="repositoryType" name="row-radio-buttons-group">
             <FormControlLabel value="github" disabled={hasGitRepo} control={<Radio />} onChange={selected} label="GitHub" />
             <FormControlLabel value="gitlab" disabled={hasGitRepo} control={<Radio />} onChange={selected} label="GitLab" />
-            <FormControlLabel value="sonar"  control={<Radio />} onChange={selected} label="SonarQube" />
-            <FormControlLabel value="trello" control={<Radio />} onChange={selected} label="Trello" />
+            <FormControlLabel value="sonar"  disabled={hasSonar} control={<Radio />} onChange={selected} label="SonarQube" />
+            <FormControlLabel value="trello" disabled={hasTrello} control={<Radio />} onChange={selected} label="Trello" />
             <FormControlLabel
               value="disabled"
               disabled

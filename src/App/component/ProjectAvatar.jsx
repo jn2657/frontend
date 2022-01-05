@@ -171,9 +171,11 @@ function ProjectAvatar(props) {
           </IconButton>
           }
 
+          {!((hasGithubRepo || hasTrelloBoard) && hasSonarRepo && hasTrelloBoard) &&
           <IconButton aria-label="Add Repository" onClick={showAddRepoDialog}>
             <AddIcon/>
           </IconButton>
+          }
 
         </CardActions>
         }
@@ -184,6 +186,8 @@ function ProjectAvatar(props) {
         handleClose={() => setAddRepoDialogOpen(false)}
         projectId={props.project.projectId}
         hasGitRepo={hasGithubRepo || hasGitlabRepo}
+        hasSonar={hasSonarRepo}
+        hasTrello={hasTrelloBoard}
       />
     </span>
   )
