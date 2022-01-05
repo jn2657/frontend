@@ -14,7 +14,7 @@
     "@progress/kendo-react-progressbars": "^4.13.0",
     "@progress/kendo-theme-material": "^4.43.0",
     "axios": "^0.24.0",
-    "chart.js": "^3.7.0",
+    "chart.js": "3.5.1",
     "clsx": "^1.1.1",
     "moment": "^2.29.1",
     "prop-types": "15.7.2",
