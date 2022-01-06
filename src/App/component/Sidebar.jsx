@@ -310,10 +310,11 @@ function Sidebar(prop) {
   }
 
   const jwtToken = localStorage.getItem("jwtToken")
+  const memberId = localStorage.getItem("memberId")
 
   useEffect(() => {
     if (prop.currentProjectId !== 0) {
-      Axios.get(`http://localhost:9100/pvs-api/project/1/${prop.currentProjectId}`,
+      Axios.get(`http://localhost:9100/pvs-api/project/${memberId}/${prop.currentProjectId}`,
         { headers: { "Authorization": `${jwtToken}` } })
         .then((response) => {
           setCurrentProject(response.data)

@@ -88,6 +88,7 @@ function ComparisonPage(prop) {
   };
 
   const projectId = localStorage.getItem("projectId")
+  const memberId = localStorage.getItem("memberId")
 
   const sendPVSBackendRequest = async (method, url) => {
     const baseURL = 'http://localhost:9100/pvs-api';
@@ -100,7 +101,7 @@ function ComparisonPage(prop) {
   };
 
   const loadInitialProjectInfo = () => {
-    sendPVSBackendRequest('GET', `/project/1/${projectId}`)
+    sendPVSBackendRequest('GET', `/project/${memberId}/${projectId}`)
       .then((responseData) => {
         if (responseData) {
           setCurrentProject(responseData)
@@ -122,8 +123,10 @@ function ComparisonPage(prop) {
 
     if (githubRepo !== undefined) {
       const query = githubRepo.url.split("github.com/")[1]
+      const repoOwner = query.split("/")[0]
+      const repoName = query.split("/")[1]
       // todo need refactor with async
-      sendPVSBackendRequest('GET', `/github/commits/${query}/${branch}`)
+      sendPVSBackendRequest('GET', `/github/commits?repoOwner=${repoOwner}&repoName=${repoName}&branchName=${branch}`)
         .then((responseData) => {
           if (responseData) {
             setCommitListDataLeft(responseData)

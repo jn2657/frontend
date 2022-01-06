@@ -29,8 +29,7 @@ export default function Login() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
 
-
-  const login = () => {
+  const login = async () => {
     if (username === "" || password === "") {
       alert("不準啦馬的>///<")
     } else {
@@ -38,15 +37,69 @@ export default function Login() {
         username: username,
         password: password
       }
-      Axios.post(`http://localhost:9100/pvs-api/auth/login`, payload)
-        .then((response) => {
-          localStorage.setItem("jwtToken", response.data)
-          goToSelect()
-        })
-        .catch((e) => {
-          alert(e.response.status)
-          console.error(e)
-        })
+      // Axios.post(`http://localhost:9100/pvs-api/auth/login`, payload)
+      // .then((response) => {
+      //   localStorage.setItem("jwtToken", response.data)
+      //   goToSelect()
+      // })
+      // .catch((e) => {
+      //   alert(e.response?.status)
+      //   console.error(e)
+      // })
+
+      // setJWToken(payload)
+      // setMemberId()
+      // goToSelect()
+
+      // const JWTokenResponse = await Axios.post(`http://localhost:9100/pvs-api/auth/login`, payload)
+      // const memberIdResponse = await Axios.get(`http://localhost:9100/pvs-api/auth/memberId?username=${username}`)
+      localStorage.setItem("jwtToken", await getJWToken(payload))
+      localStorage.setItem("memberId", await getMemberId())
+      goToSelect()
+    }
+  }
+
+  // const setJWToken = (payload) => {
+  //   Axios.post(`http://localhost:9100/pvs-api/auth/login`, payload)
+  //   .then((response) => {
+  //     // localStorage.setItem("jwtToken", response.data)
+  //     return response.data
+  //   })
+  //   .catch((e) => {
+  //     alert(e.response?.status)
+  //     console.error(e)
+  //   })
+  // }
+
+  // const setMemberId = () => {
+  //   Axios.get(`http://localhost:9100/pvs-api/auth/memberId?username=${username}`)
+  //   .then((response) => {
+  //     // localStorage.setItem("memberId", response.data)
+  //     return response.data
+  //   })
+  //   .catch((e) => {
+  //     alert(e.response?.status)
+  //     console.error(e)
+  //   })
+  // }
+
+  const getJWToken = async (payload) => {
+    try {
+      const response = await Axios.post(`http://localhost:9100/pvs-api/auth/login`, payload)
+      return response.data
+    } catch (e) {
+      alert(e.response?.status)
+      console.error(e)
+    }
+  }
+
+  const getMemberId = async () => {
+    try {
+      const response = await Axios.get(`http://localhost:9100/pvs-api/auth/memberId?username=${username}`)
+      return response.data
+    } catch (e) {
+      alert(e.response?.status)
+      console.error(e)
     }
   }
 

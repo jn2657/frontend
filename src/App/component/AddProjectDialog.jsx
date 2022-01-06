@@ -14,6 +14,7 @@ import {
 export default function AddProjectDialog({ open, reloadProjects, handleClose }) {
   const [projectName, setProjectName] = useState("")
   const jwtToken = localStorage.getItem("jwtToken")
+  const memberId = localStorage.getItem("memberId")
 
   const createProject = async () => {
     if (projectName.trim() === "") {
@@ -22,6 +23,7 @@ export default function AddProjectDialog({ open, reloadProjects, handleClose }) 
     }
 
     const payload = {
+      memberId,
       projectName,
       githubRepositoryURL: "",
       gitLabRepositoryURL: "",

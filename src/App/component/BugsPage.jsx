@@ -38,11 +38,12 @@ function BugsPage(prop) {
   };
 
   const jwtToken = localStorage.getItem("jwtToken")
+  const memberId = localStorage.getItem("memberId")
 
   //TODO 這邊寫死的記得要改唷!!!! >////<
 
   useEffect(() => {
-    Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
+    Axios.get(`http://localhost:9100/pvs-api/project/${memberId}/${projectId}`,
       {headers: {"Authorization": `${jwtToken}`}})
       .then(response => {
         setCurrentProject(response.data)
