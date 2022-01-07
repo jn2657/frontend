@@ -117,35 +117,42 @@ function ComparisonPage(prop) {
     loadInitialProjectInfo()
   }, [])
 
+  const updateCommits = () => {
+    const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
+    const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
+
+    // Only GitHub & GitLab repo has comparison page, so repo could only be GitHub or GitLab
+    const repo = githubRepo !== undefined ? githubRepo : gitlabRepo
+    if (repo !== undefined) {
+      const query = repo.url.split(repo.type + ".com/")[1]
+
+      sendPVSBackendRequest('POST', `http://localhost:9100/pvs-api/${repo.type}/commits/${query}`)
+        .then(() => {
+          getCommitFromDBLeft(leftBranchSelected)
+          getCommitFromDBRight(rightBranchSelected)
+          setLoading(false)
+        })
+        .catch((e) => {
+          alert(e.response?.status)
+          console.error(e)
+        })
+    }
+  }
+
   const getCommitFromDBLeft = (branch) => {
     const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
     const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
 
-    if (githubRepo !== undefined) {
-      const query = githubRepo.url.split("github.com/")[1]
+    const repo = githubRepo !== undefined ? githubRepo : gitlabRepo
+    if (repo !== undefined) {
+      const query = repo.url.split(repo.type + ".com/")[1]
       const repoOwner = query.split("/")[0]
       const repoName = query.split("/")[1]
-      // todo need refactor with async
-      sendPVSBackendRequest('GET', `/github/commits?repoOwner=${repoOwner}&repoName=${repoName}&branchName=${branch}`)
-        .then((responseData) => {
-          if (responseData) {
-            setCommitListDataLeft(responseData)
-            setLoading(false)
-          }
-        })
-        .catch((e) => {
-          alert(e)
-          console.error(e)
-        })
-    }
 
-    if (gitlabRepo !== undefined) {
-      const query = gitlabRepo.url.split("gitlab.com/")[1]
-      sendPVSBackendRequest('GET', `gitlab/commits/${query}/${branch}`)
+      sendPVSBackendRequest('GET', `/${repo.type}/commits?repoOwner=${repoOwner}&repoName=${repoName}&branchName=${branch}`)
         .then((responseData) => {
           if (responseData) {
             setCommitListDataLeft(responseData)
-            setLoading(false)
           }
         })
         .catch((e) => {
@@ -159,29 +166,16 @@ function ComparisonPage(prop) {
     const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
     const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
 
-    if (githubRepo !== undefined) {
-      const query = githubRepo.url.split("github.com/")[1]
-      // todo need refactor with async
-      sendPVSBackendRequest('GET', `/github/commits/${query}/${branch}`)
-        .then((responseData) => {
-          if (responseData) {
-            setCommitListDataRight(responseData)
-            setLoading(false)
-          }
-        })
-        .catch((e) => {
-          alert(e)
-          console.error(e)
-        })
-    }
+    const repo = githubRepo !== undefined ? githubRepo : gitlabRepo
+    if (repo !== undefined) {
+      const query = repo.url.split(repo.type + ".com/")[1]
+      const repoOwner = query.split("/")[0]
+      const repoName = query.split("/")[1]
 
-    if (gitlabRepo !== undefined) {
-      const query = gitlabRepo.url.split("gitlab.com/")[1]
-      sendPVSBackendRequest('GET', `/gitlab/commits/${query}/${branch}`)
+      sendPVSBackendRequest('GET', `/${repo.type}/commits?repoOwner=${repoOwner}&repoName=${repoName}&branchName=${branch}`)
         .then((responseData) => {
           if (responseData) {
             setCommitListDataRight(responseData)
-            setLoading(false)
           }
         })
         .catch((e) => {
@@ -195,23 +189,11 @@ function ComparisonPage(prop) {
     const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
     const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
 
-    if (githubRepo !== undefined) {
-      const query = githubRepo.url.split("github.com/")[1]
-      sendPVSBackendRequest('GET', `/github/branchList/${query}`)
-        .then((responseData) => {
-          if (responseData) {
-            setBranchList(responseData)
-          }
-        })
-        .catch((e) => {
-          alert(e)
-          console.error(e)
-        })
-    }
+    const repo = githubRepo !== undefined ? githubRepo : gitlabRepo
+    if (repo !== undefined) {
+      const query = repo.url.split(repo.type + ".com/")[1]
 
-    if (gitlabRepo !== undefined) {
-      const query = gitlabRepo.url.split("gitlab.com/")[1]
-      sendPVSBackendRequest('GET', `/gitlab/branchList/${query}`)
+      sendPVSBackendRequest('GET', `/${repo.type}/branchList/${query}`)
         .then((responseData) => {
           if (responseData) {
             setBranchList(responseData)
@@ -251,10 +233,9 @@ function ComparisonPage(prop) {
 
   useEffect(() => {
     if (isLoading) {
-      getCommitFromDBLeft(leftBranchSelected)
-      getCommitFromDBRight(rightBranchSelected)
+      updateCommits()
     }
-  }, [currentProject, prop.startMonth, prop.endMonth, leftBranchSelected, rightBranchSelected, isLoading])
+  }, [isLoading])
 
   useEffect(() => {
     const { startMonth, endMonth } = prop
@@ -309,7 +290,7 @@ function ComparisonPage(prop) {
             disabled={isLoading}
             onClick={!isLoading ? handleClick : null}
           >
-            {isLoading ? 'Loading…' : 'reload commits'}
+            {isLoading ? 'Loading…' : 'Reload'}
           </Button>
         </div>
       </header>
