@@ -30,6 +30,7 @@ function DuplicationsPage(prop) {
 
   const projectId = localStorage.getItem("projectId")
   const jwtToken = localStorage.getItem("jwtToken")
+  const memberId = localStorage.getItem("memberId")
 
   const [open, setOpen] = useState(false)
   const handleClose = () => {
@@ -41,7 +42,7 @@ function DuplicationsPage(prop) {
 
 
   useEffect(() => {
-    Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
+    Axios.get(`http://localhost:9100/pvs-api/project/${memberId}/${projectId}`,
       {headers: {"Authorization": `${jwtToken}`}})
       .then(response => {
         setCurrentProject(response.data)

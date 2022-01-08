@@ -88,6 +88,7 @@ function ComparisonPage(prop) {
   };
 
   const projectId = localStorage.getItem("projectId")
+  const memberId = localStorage.getItem("memberId")
 
   const sendPVSBackendRequest = async (method, url) => {
     const baseURL = 'http://localhost:9100/pvs-api';
@@ -100,7 +101,7 @@ function ComparisonPage(prop) {
   };
 
   const loadInitialProjectInfo = () => {
-    sendPVSBackendRequest('GET', `/project/1/${projectId}`)
+    sendPVSBackendRequest('GET', `/project/${memberId}/${projectId}`)
       .then((responseData) => {
         if (responseData) {
           setCurrentProject(responseData)

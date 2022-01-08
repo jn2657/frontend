@@ -21,6 +21,10 @@ export default function Login() {
       zIndex: theme.zIndex.drawer + 1,
       color: '#fff',
     },
+    invalidAccount: {
+      fontSize: '12px',
+      color: '#FF0000',
+    },
   }));
 
 
@@ -28,9 +32,9 @@ export default function Login() {
   const history = useHistory()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+  const [invalidAccount, setInvalidAccount] = useState(false)
 
-
-  const login = () => {
+  const login = async () => {
     if (username === "" || password === "") {
       alert("不準啦馬的>///<")
     } else {
@@ -38,15 +42,39 @@ export default function Login() {
         username: username,
         password: password
       }
-      Axios.post(`http://localhost:9100/pvs-api/auth/login`, payload)
-        .then((response) => {
-          localStorage.setItem("jwtToken", response.data)
-          goToSelect()
-        })
-        .catch((e) => {
-          alert(e.response.status)
-          console.error(e)
-        })
+      const jwt = await getJWTFrom(payload)
+      const memberId = await getMemberId()
+      if (jwt !== "" && memberId !== "") {
+        localStorage.setItem("jwtToken", jwt)
+        localStorage.setItem("memberId", memberId)
+        goToSelect()
+      } else {
+        setInvalidAccount(true)
+      }
+    }
+  }
+
+  const getJWTFrom = async (credential) => {
+    try {
+      const response = await Axios.post(`http://localhost:9100/pvs-api/auth/login`, credential)
+      return response.data
+    } catch (e) {
+      alert(e.response?.status)
+      console.error(e)
+    }
+  }
+
+  const getMemberId = async () => {
+    try {
+      const response = await Axios.get(`http://localhost:9100/pvs-api/auth/memberId`, {
+        params: {
+          username
+        }
+      })
+      return response.data
+    } catch (e) {
+      alert(e.response?.status)
+      console.error(e)
     }
   }
 
@@ -58,6 +86,9 @@ export default function Login() {
     <div className={classes.root}>
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo"/>
+        { invalidAccount &&
+          <p className={classes.invalidAccount}>Invalid username or password</p>
+        }
         <TextField
           id="username"
           label="Username"

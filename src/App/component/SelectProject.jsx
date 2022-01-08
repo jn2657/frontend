@@ -40,7 +40,7 @@ function SelectProject({setCurrentProjectId}) {
   const [addRepoDialogOpen, setAddRepoDialogOpen] = useState(false)
   const [projects, setProjects] = useState([])
   const jwtToken = localStorage.getItem("jwtToken")
-  const memberId = 1 // There are no other members yet.
+  const memberId = localStorage.getItem("memberId")
 
   const loadProjects = () => {
     Axios.get(`http://localhost:9100/pvs-api/project/${memberId}/active`,

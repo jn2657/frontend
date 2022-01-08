@@ -80,6 +80,7 @@ function DashboardPage() {
 
   const projectId = localStorage.getItem("projectId")
   const jwtToken = localStorage.getItem("jwtToken")
+  const memberId = localStorage.getItem("memberId")
   const [open, setOpen] = useState(false);
   const handleClose = () => {
     setOpen(false);
@@ -90,7 +91,7 @@ function DashboardPage() {
 
   const fetchCurrentProject = async () => {
     try {
-      const response = await Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
+      const response = await Axios.get(`http://localhost:9100/pvs-api/project/${memberId}/${projectId}`,
         { headers: { "Authorization": `${jwtToken}` } })
       setCurrentProject(response.data)
     } catch (e) {
