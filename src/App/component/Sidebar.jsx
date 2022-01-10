@@ -114,7 +114,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 function Sidebar(prop) {
-  //todo seperate sidebar and appbar~~~
+  //todo separate sidebar and appbar~~~
 
   const open = useState(true)[0]
   const history = useHistory()
@@ -313,7 +313,7 @@ function Sidebar(prop) {
   const memberId = localStorage.getItem("memberId")
 
   useEffect(() => {
-    if (prop.currentProjectId !== 0) {
+    if (prop.currentProjectId && prop.currentProjectId !== '0') {
       Axios.get(`http://localhost:9100/pvs-api/project/${memberId}/${prop.currentProjectId}`,
         { headers: { "Authorization": `${jwtToken}` } })
         .then((response) => {

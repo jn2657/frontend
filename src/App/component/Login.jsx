@@ -4,12 +4,7 @@ import Axios from 'axios'
 import logo from '../../assets/welcome.png'
 import {useHistory} from 'react-router-dom'
 import './Login.css'
-import {
-  TextField,
-  Button,
-  Backdrop,
-  CircularProgress
-} from '@material-ui/core'
+import {Backdrop, Button, CircularProgress, TextField} from '@material-ui/core'
 
 const passwordRegex = new RegExp("^(?=.*?[0-9])(?=.*?[A-Za-z])(?=.*?[`!@#$%^&*()_+-=[\\]{};'\":\\|,.<>/?~]).{8,}$")
 
@@ -50,35 +45,43 @@ export default function Login() {
     setAccountChecking(false);
   };
   const accountCheckingStart = () => {
+    setAccountOperationHint('')
     setAccountChecking(!accountChecking);
   };
 
   const login = async () => {
-    if (username === "" || password === "") {
+    accountCheckingStart()
+    if (!(username?.trim()?.length) || !(password?.toString()?.length)) {
       alert("不準啦馬的>///<")
-    } else {
-      let payload = {
-        username: username,
-        password: password
-      }
-      accountCheckingStart()
-      const jwt = await getJWTFrom(payload)
-      const memberId = await getMemberId()
-      if (jwt !== "" && memberId !== "") {
-        localStorage.setItem("jwtToken", jwt)
-        localStorage.setItem("memberId", memberId)
-        accountCheckingEnd()
-        goToSelect()
-      } else {
-        setAccountOperationHint("InvalidAccount")
-        accountCheckingEnd()
-      }
+      accountCheckingEnd()
+      return
     }
+
+    const credential = {
+      username: username.trim(),
+      password
+    }
+
+    const jwt = await getJWTFrom(credential)
+    if (jwt && jwt !== "") {
+      localStorage.setItem("jwtToken", jwt)
+      Axios.defaults.headers.common['Authorization'] = jwt
+      const memberId = await getMemberId()
+      if (memberId && memberId !== "") {
+        localStorage.setItem("memberId", memberId)
+        redirectToProjectSelectPage()
+      } else {
+        setAccountOperationHint('InvalidAccount')
+      }
+    } else {
+      setAccountOperationHint('InvalidAccount')
+    }
+    accountCheckingEnd()
   }
 
   const register = async () => {
     accountCheckingStart()
-    if (username?.trim()?.length === 0 || password?.toString()?.length === 0) {
+    if (!(username?.trim()?.length) || !(password?.toString()?.length)) {
       alert("不準啦馬的>///<")
       accountCheckingEnd()
       return
@@ -113,8 +116,7 @@ export default function Login() {
       const response = await Axios.post(`http://localhost:9100/pvs-api/auth/login`, credential)
       return response.data
     } catch (e) {
-      alert(e.response?.status)
-      console.error(e)
+      console.warn(e)
     }
   }
 
@@ -132,24 +134,24 @@ export default function Login() {
     }
   }
 
-  const goToSelect = () => {
+  const redirectToProjectSelectPage = () => {
     history.push("/select")
   }
 
   return (
     <div className={classes.root}>
       <Backdrop className={classes.backdrop} open={accountChecking}>
-        <CircularProgress color="inherit" />
+        <CircularProgress color="inherit"/>
       </Backdrop>
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo"/>
-        { accountOperationHint === "InvalidAccount" &&
+        {accountOperationHint === "InvalidAccount" &&
           <p className={classes.accountOperationHint}>Invalid username or password</p>
         }
-        { accountOperationHint === "registerSuccess" &&
+        {accountOperationHint === "registerSuccess" &&
           <p className={classes.accountOperationHintSuccess}>Account is registered successfully</p>
         }
-        { accountOperationHint === "registerFailed" &&
+        {accountOperationHint === "registerFailed" &&
           <p className={classes.accountOperationHint}>Account already exists</p>
         }
         <TextField

@@ -2,10 +2,11 @@ import {Redirect, Route, Switch} from 'react-router-dom'
 import Container from '../App/component/Container'
 import routes from './Routes'
 import {randomHash} from "../utils";
+import axios from "axios";
 
 function ProtectedRoute({component: Component, ...rest}) {
   const jwtToken = localStorage.getItem("jwtToken")
-  if (jwtToken === null) {
+  if (!jwtToken) {
     return <Redirect to="/login"/>
   }
   return (
@@ -18,6 +19,9 @@ function ProtectedRoute({component: Component, ...rest}) {
 }
 
 export default function AllRoutes() {
+  const jwt = localStorage.getItem("jwtToken")
+  if (jwt) axios.defaults.headers.common['Authorization'] = jwt
+
   return (
     <Switch>
       {routes.map((prop) =>

@@ -1,4 +1,4 @@
-const init = localStorage.getItem('projectId') || 0
+const init = localStorage.getItem('projectId')
 
 const currentProjectIdReducer = (state = init, action) => {
   switch (action.type) {
