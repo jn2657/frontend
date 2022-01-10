@@ -6,7 +6,9 @@ import {useHistory} from 'react-router-dom'
 import './Login.css'
 import {
   TextField,
-  Button
+  Button,
+  Backdrop,
+  CircularProgress
 } from '@material-ui/core'
 
 export default function Login() {
@@ -21,9 +23,12 @@ export default function Login() {
       zIndex: theme.zIndex.drawer + 1,
       color: '#fff',
     },
-    invalidAccount: {
+    accountOperationHint: {
       fontSize: '12px',
       color: '#FF0000',
+    },
+    registerButton: {
+      marginRight: '7px',
     },
   }));
 
@@ -32,7 +37,14 @@ export default function Login() {
   const history = useHistory()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  const [invalidAccount, setInvalidAccount] = useState(false)
+  const [accountOperationHint, setAccountOperationHint] = useState("")
+  const [accountChecking, setAccountChecking] = useState(false);
+  const accountCheckingEnd = () => {
+    setAccountChecking(false);
+  };
+  const accountCheckingStart = () => {
+    setAccountChecking(!accountChecking);
+  };
 
   const login = async () => {
     if (username === "" || password === "") {
@@ -42,16 +54,42 @@ export default function Login() {
         username: username,
         password: password
       }
+      accountCheckingStart()
       const jwt = await getJWTFrom(payload)
       const memberId = await getMemberId()
       if (jwt !== "" && memberId !== "") {
         localStorage.setItem("jwtToken", jwt)
         localStorage.setItem("memberId", memberId)
+        accountCheckingEnd()
         goToSelect()
       } else {
-        setInvalidAccount(true)
+        setAccountOperationHint("InvalidAccount")
+        accountCheckingEnd()
       }
     }
+  }
+
+  const register = async () => {
+    accountCheckingStart()
+    const passwordRegex = new RegExp("^(?=.*?[0-9])(?=.*?[A-Za-z])(?=.*?[`!@#$%^&*()_+-=[\\]{};'\":\\|,.<>/?~]).{8,}$")
+    if (username === "" || password === "") {
+      alert("不準啦馬的>///<")
+    } else if (!passwordRegex.test(password)) {
+      alert("Password should contains: \n 1. More than 8 digits\n 2. At least one uppercase and lowercase character\n 3. At least one number\n 4. At least one symbol")
+    } else {
+      let payload = {
+        username: username,
+        password: password
+      }
+      try {
+        const response = await Axios.post(`http://localhost:9100/pvs-api/auth/register`, payload)
+        response.data ? setAccountOperationHint("registerSuccess") : setAccountOperationHint("registerFailed")
+      } catch (e) {
+        alert(e.response?.status)
+        console.error(e)
+      }
+    }
+    accountCheckingEnd()
   }
 
   const getJWTFrom = async (credential) => {
@@ -84,17 +122,26 @@ export default function Login() {
 
   return (
     <div className={classes.root}>
+      <Backdrop className={classes.backdrop} open={accountChecking}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo"/>
-        { invalidAccount &&
-          <p className={classes.invalidAccount}>Invalid username or password</p>
+        { accountOperationHint === "InvalidAccount" &&
+          <p className={classes.accountOperationHint}>Invalid username or password</p>
+        }
+        { accountOperationHint === "registerSuccess" &&
+          <p className={classes.accountOperationHint}>Account is registered successfully</p>
+        }
+        { accountOperationHint === "registerFailed" &&
+          <p className={classes.accountOperationHint}>Account already exists</p>
         }
         <TextField
           id="username"
           label="Username"
           type="text"
           variant="outlined"
-          background
+          background="true"
           onChange={(e) => {
             setUsername(e.target.value)
           }}
@@ -105,16 +152,20 @@ export default function Login() {
           label="Password"
           type="password"
           variant="outlined"
-          background
+          background="true"
           onChange={(e) => {
             setPassword(e.target.value)
           }}
         />
         <br/>
-        {/* <button onClick={login} >Login</button> */}
-        <Button variant="contained" onClick={login} color="primary">
-          Login
-        </Button>
+        <span>
+          <Button className={classes.registerButton} variant="contained" onClick={register} color="primary">
+            Register
+          </Button>
+          <Button variant="contained" onClick={login} color="primary">
+            Login
+          </Button>
+        </span>
       </header>
     </div>
   )
