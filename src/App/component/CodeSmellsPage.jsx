@@ -124,8 +124,8 @@ function CodeSmellsPage(prop) {
   }
 
   useEffect(() => {
-    loadingCodeSmellStart()
     if (Object.keys(currentProject).length !== 0) {
+      loadingCodeSmellStart()
       getCodeSmellData()
     }
   }, [currentProject, prop.startMonth, prop.endMonth])

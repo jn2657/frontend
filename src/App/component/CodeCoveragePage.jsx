@@ -45,7 +45,7 @@ function CodeCoveragePage(prop) {
   const [currentProject, setCurrentProject] = useState({})
   const [dataForCoverageChart, setDataForCoverageChart] = useState({labels: [], data: {coverage: []}})
   const [coverageUrl, setCoverageUrl] = useState("")
-  
+
   const projectId = localStorage.getItem("projectId")
   const jwtToken = localStorage.getItem("jwtToken")
   const memberId = localStorage.getItem("memberId")
@@ -114,8 +114,8 @@ function CodeCoveragePage(prop) {
   }
 
   useEffect(() => {
-    loadingCoverageStart()
     if (Object.keys(currentProject).length !== 0) {
+      loadingCoverageStart()
       getCoverageData()
     }
   }, [currentProject, prop.startMonth, prop.endMonth])

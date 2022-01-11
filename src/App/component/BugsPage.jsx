@@ -114,8 +114,8 @@ function BugsPage(prop) {
   }
 
   useEffect(() => {
-    loadingBugDataStart()
     if (Object.keys(currentProject).length !== 0) {
+      loadingBugDataStart()
       getBugData()
     }
   }, [currentProject, prop.startMonth, prop.endMonth])

@@ -114,8 +114,8 @@ function DuplicationsPage(prop) {
   }
 
   useEffect(() => {
-    loadingDuplicationStart()
     if (Object.keys(currentProject).length !== 0) {
+      loadingDuplicationStart()
       getDuplicationData()
     }
   }, [currentProject, prop.startMonth, prop.endMonth])
