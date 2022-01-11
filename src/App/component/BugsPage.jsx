@@ -1,115 +1,147 @@
-import {useEffect, useState} from 'react'
-import {makeStyles} from '@material-ui/core/styles'
+import { useEffect, useState } from 'react'
+import { makeStyles } from '@material-ui/core/styles'
 import ProjectAvatar from './ProjectAvatar'
 import Axios from 'axios'
-import {Backdrop, CircularProgress} from '@material-ui/core'
-import {connect} from 'react-redux'
+import { Backdrop, CircularProgress } from '@material-ui/core'
+import { connect } from 'react-redux'
 import DrawingBoard from './DrawingBoard'
 import moment from 'moment'
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    marginLeft: '10px',
+  },
+  chartContainer: {
     display: 'flex',
     '& > *': {
       margin: theme.spacing(1),
     },
     minWidth: '30px',
   },
+  chart: {
+    width: '67%',
+  },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: '#fff',
+  },
+  title: {
+    display: 'flex',
+    marginLeft: '15px',
+    marginRight: '15px',
+    alignItems: 'center',
+  },
+  avatar: {
+    display: 'inline-block'
+  },
+  header: {
+    display: 'flex',
+    width: '95%'
   },
 }))
 
 function BugsPage(prop) {
   const classes = useStyles()
-  const [bugList, setBugList] = useState([])
-  const [currentProject, setCurrentProject] = useState(undefined)
+  const [currentProject, setCurrentProject] = useState({})
   const [bugUrl, setBugUrl] = useState("")
   const [dataForBugChart, setDataForBugChart] = useState({labels: [], data: {bug: []}})
 
   const projectId = localStorage.getItem("projectId")
-  const [open, setOpen] = useState(false)
-  const handleClose = () => {
-    setOpen(false)
-  };
-  const handleToggle = () => {
-    setOpen(!open)
-  };
-
   const jwtToken = localStorage.getItem("jwtToken")
   const memberId = localStorage.getItem("memberId")
 
-  //TODO 這邊寫死的記得要改唷!!!! >////<
+  const [isLoading, setLoading] = useState(false)
+  const loadingBugDataEnd = () => {
+    setLoading(false)
+  }
+  const loadingBugDataStart = () => {
+    setLoading(!isLoading)
+  }
+
+  const config = {
+    headers: {
+      ...(jwtToken && { "Authorization": jwtToken })
+    }
+  }
+
+  const sendPVSBackendRequest = async (method, url) => {
+    const baseURL = 'http://localhost:9100/pvs-api'
+    const requestConfig = {
+      baseURL,
+      url,
+      method,
+      config
+    }
+    return (await Axios.request(requestConfig))?.data
+  }
+
+  const loadInitialProjectInfo = async () => {
+    try {
+      const response = await sendPVSBackendRequest('GET', `/project/${memberId}/${projectId}`)
+      setCurrentProject(response)
+    } catch (e) {
+      alert(e.response?.status)
+      console.error(e)
+    }
+  }
 
   useEffect(() => {
-    Axios.get(`http://localhost:9100/pvs-api/project/${memberId}/${projectId}`,
-      {headers: {"Authorization": `${jwtToken}`}})
-      .then(response => {
-        setCurrentProject(response.data)
-      })
-      .catch(e => {
-        alert(e.response.status)
-        console.error(e)
-      })
+    loadInitialProjectInfo()
   }, [])
 
-  useEffect(() => {
-    handleToggle()
-    if (currentProject !== undefined) {
-      let repositoryDTO = currentProject.repositoryDTOList.find(x => x.type === "sonar")
-      let sonarComponent = repositoryDTO.url.split("id=")[1]
-      setBugUrl(`https://sonarcloud.io/project/issues?id=${sonarComponent}&resolved=false&types=BUG`)
-      Axios.get(`http://localhost:9100/pvs-api/sonar/${sonarComponent}/bug`,
-        {headers: {"Authorization": `${jwtToken}`}})
-        .then((response) => {
-          setBugList(response.data)
-        })
-        .catch((e) => {
-          alert(e.response.status)
-          console.error(e)
-        })
+  const getBugData = async () => {
+    const repositoryDTO = currentProject.repositoryDTOList.find(x => x.type === "sonar")
+    const sonarComponent = repositoryDTO.url.split("id=")[1]
+    setBugUrl(`https://sonarcloud.io/project/issues?id=${sonarComponent}&resolved=false&types=BUG`)
+    try {
+      const response = await sendPVSBackendRequest('GET', `/sonar/${sonarComponent}/bug`)
+      setBugChart(response)
+    } catch (e) {
+      alert(e.response?.status)
+      console.error(e)
+      loadingBugDataEnd()
     }
-  }, [currentProject])
+  }
 
+  const setBugChart = (bugList) => {
+    const dataset = {labels: [], data: {bug: []}}
+    bugList.forEach(bug => {
+      dataset.labels.push(moment(bug.date).format("YYYY-MM-DD HH:mm:ss"))
+      dataset.data.bug.push(bug.value)
+    })
+    setDataForBugChart(dataset)
+    loadingBugDataEnd()
+  }
 
   useEffect(() => {
-    let chartDataset = {labels: [], data: {bug: []}}
-
-    bugList.forEach(bug => {
-      chartDataset.labels.push(moment(bug.date).format("YYYY-MM-DD HH:mm:ss"))
-      chartDataset.data.bug.push(bug.value)
-    })
-
-    setDataForBugChart(chartDataset)
-    handleClose()
-
-  }, [bugList, prop.startMonth, prop.endMonth])
+    loadingBugDataStart()
+    if (Object.keys(currentProject).length !== 0) {
+      getBugData()
+    }
+  }, [currentProject, prop.startMonth, prop.endMonth])
 
   return (
-    <div style={{marginLeft: "10px"}}>
-      <Backdrop className={classes.backdrop} open={open}>
-        <CircularProgress color="inherit"/>
+    <div className={classes.root}>
+      <Backdrop className={classes.backdrop} open={isLoading}>
+        <CircularProgress color="inherit" />
       </Backdrop>
-      <div className={classes.root}>
-        {currentProject && <ProjectAvatar
+      <header className={classes.header}>
+        <ProjectAvatar
           size="small"
           project={currentProject}
-        />}
-        <p>
-          <h2>{currentProject ? currentProject.projectName : ""}</h2>
-        </p>
-      </div>
-      <h2 id="number-of-sonar"><a href={bugUrl}
-                                  target="blank">{dataForBugChart.data.bug[dataForBugChart.data.bug.length - 1]}</a>
+          className={classes.avatar}
+        />
+        <h2 className={classes.title}>{currentProject ? currentProject.projectName : ""}</h2>
+      </header>
+      <h2 id="number-of-sonar">
+        <a href={bugUrl} target="blank">{dataForBugChart.data.bug[dataForBugChart.data.bug.length - 1]}</a>
       </h2>
-      <div className={classes.root}>
-        <div style={{width: "67%"}}>
+      <div className={classes.chartContainer}>
+        <div className={classes.chart}>
           <div>
             <h1>Bugs</h1>
             <div>
-              <DrawingBoard data={dataForBugChart} maxBoardY={Math.max(...dataForBugChart.data.bug) + 5}
-                            id="bugs-chart"/>
+              <DrawingBoard data={dataForBugChart} maxBoardY={Math.max(...dataForBugChart.data.bug) + 5} id="bugs-chart"/>
             </div>
           </div>
         </div>
