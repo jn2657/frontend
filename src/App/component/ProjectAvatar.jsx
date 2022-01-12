@@ -1,17 +1,20 @@
-import {useState, useEffect} from 'react'
-import {useHistory} from 'react-router-dom'
-import {makeStyles} from '@material-ui/core/styles'
-import {Box, CardActionArea, Avatar, CardActions, IconButton} from '@material-ui/core'
+import { useState, useEffect } from 'react'
+import { useHistory } from 'react-router-dom'
+import { makeStyles } from '@material-ui/core/styles'
+import { Box, CardActionArea, Avatar, CardActions, Icon, IconButton, InputAdornment } from '@material-ui/core'
 import GitHubIcon from '@material-ui/icons/GitHub';
 import FilterDramaIcon from '@material-ui/icons/FilterDrama';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import AddIcon from '@material-ui/icons/Add';
+import { BiEditAlt } from 'react-icons/bi';
+import { MdTextFields } from 'react-icons/md'
 import AddRepositoryDialog from './AddRepositoryDialog';
-import {connect} from 'react-redux'
-import {setCurrentProjectId} from '../../redux/action'
+import { connect } from 'react-redux'
+import { setCurrentProjectId } from '../../redux/action'
 import {
   Button,
+  TextField,
   Dialog,
   DialogActions,
   DialogContent,
@@ -19,6 +22,7 @@ import {
   DialogTitle
 } from '@material-ui/core'
 import Axios from "axios"
+import defaultAvatar from "../../assets/defaultAvatar.png"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,7 +42,10 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     width: "100%",
     height: "100%"
-  }
+  },
+  projectNameContainer: {
+    marginTop: '10px',
+  },
 }))
 
 function ProjectAvatar(props) {
@@ -51,6 +58,8 @@ function ProjectAvatar(props) {
   const [hasSonarRepo, setHasSonarRepo] = useState(false)
   const [hasTrelloBoard, setHasTrelloBoard] = useState(false)
   const [deletionAlertDialog, setDeletionAlertDialog] = useState(false)
+  const [projectName, setProjectName] = useState("")
+  const [projectNameChangeStatus, setProjectNameChangeStatus] = useState(true)
   const jwt = localStorage.getItem("jwtToken")
 
   useEffect(() => {
@@ -101,7 +110,7 @@ function ProjectAvatar(props) {
 
   const deleteProject = () => {
     Axios.delete(`http://localhost:9100/pvs-api/project/remove/${props.project.projectId}`,
-      {headers: {...(jwt && {"Authorization": jwt})}})  // If jwt is null, it will return {} to headers. Otherwise it will return {"Authorization": jwt}
+      { headers: { ...(jwt && { "Authorization": jwt }) } })  // If jwt is null, it will return {} to headers. Otherwise it will return {"Authorization": jwt}
       .then(() => {
         toggleDeletionAlertDialog()
         props.reloadProjects()
@@ -111,73 +120,127 @@ function ProjectAvatar(props) {
       })
   }
 
+  const renameProject = async () => {
+    const projectId = props.project.projectId
+    try {
+      await Axios.patch(`http://localhost:9100/pvs-api/project?name=${projectName}&projectId=${projectId}`)
+    } catch (e) {
+      alert(e.response?.status)
+      console.error(e)
+    }
+  }
+
   return (
     <span>
       <Box className={props.size === 'large' ? classes.large : classes.small}>
-      {props.size === 'large' &&
-      <Button onClick={toggleDeletionAlertDialog}>X</Button>
-      }
-      <Dialog
-      open={deletionAlertDialog}
-      onClose={toggleDeletionAlertDialog}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description">
-        <DialogTitle id="alert-dialog-title">
-          {"Are You Sure You Want to Delete This Project?"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            You cannot restore it after deleting.
+        {props.size === 'large' &&
+          <Button onClick={toggleDeletionAlertDialog}>X</Button>
+        }
+        <Dialog
+          open={deletionAlertDialog}
+          onClose={toggleDeletionAlertDialog}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description">
+          <DialogTitle id="alert-dialog-title">
+            {"Are You Sure You Want to Delete This Project?"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              You cannot restore it after deleting.
           </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={toggleDeletionAlertDialog}>Back</Button>
-          <Button onClick={deleteProject} autoFocus>
-            Delete
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={toggleDeletionAlertDialog}>Back</Button>
+            <Button onClick={deleteProject} autoFocus>
+              Delete
           </Button>
-        </DialogActions>
-      </Dialog>
+          </DialogActions>
+        </Dialog>
         <CardActionArea onClick={goToDashboard}>
-          <Avatar alt="first repository" src={props.project.avatarURL} className={classes.avatar}/>
-          {props.size === 'large' &&
-          <p style={{"textAlign": "center"}}>{props.project.projectName}</p>
+          {props.project.avatarURL !== "" &&
+            <Avatar alt="first repository" src={props.project.avatarURL} className={classes.avatar} />
+          }
+          {props.project.avatarURL === "" &&
+            <Avatar alt="first repository" src={defaultAvatar} className={classes.avatar} />
           }
         </CardActionArea>
 
+        {/* Project Name TextField */}
         {props.size === 'large' &&
-        <CardActions disableSpacing>
+          <div className={classes.projectNameContainer}>
+            <TextField
+              id="projectName"
+              type="text"
+              inputProps={{ style: { marginLeft: '11px', textAlign: 'center' }}}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Icon edge="start">
+                      <MdTextFields />
+                    </Icon>
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton edge="end" color="secondary" onClick={() => setProjectNameChangeStatus(false)}>
+                      <BiEditAlt />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              defaultValue={props.project.projectName}
+              disabled={projectNameChangeStatus}
+              onChange={(e) => {
+                setProjectName(e.target.value)
+              }}
+              onKeyDown={(ev) => {
+                console.log(ev.key)
+                if (ev.key === 'Enter') {
+                  renameProject()
+                  setProjectNameChangeStatus(true)
+                }
+                if (ev.key === 'Escape') {
+                  setProjectNameChangeStatus(true)
+                }
+              }}
+            />
+          </div>
+        }
 
-          {hasGithubRepo &&
-          <IconButton aria-label="GitHub" onClick={goToCommit}>
-            <GitHubIcon/>
-          </IconButton>
-          }
+        {props.size === 'large' &&
+          <CardActions disableSpacing>
 
-          {hasGitlabRepo &&
-          <IconButton aria-label="GitLab" onClick={goToCommit}>
-            <FilterDramaIcon/>
-          </IconButton>
-          }
+            {hasGithubRepo &&
+              <IconButton aria-label="GitHub" onClick={goToCommit}>
+                <GitHubIcon />
+              </IconButton>
+            }
 
-          {hasSonarRepo &&
-          <IconButton aria-label="SonarQube" onClick={goToCodeCoverage}>
-            <GpsFixedIcon/>
-          </IconButton>
-          }
+            {hasGitlabRepo &&
+              <IconButton aria-label="GitLab" onClick={goToCommit}>
+                <FilterDramaIcon />
+              </IconButton>
+            }
 
-          {hasTrelloBoard &&
-          <IconButton aria-label="Trello" onClick={goToTrelloBoard}>
-            <DashboardIcon/>
-          </IconButton>
-          }
+            {hasSonarRepo &&
+              <IconButton aria-label="SonarQube" onClick={goToCodeCoverage}>
+                <GpsFixedIcon />
+              </IconButton>
+            }
 
-          {!((hasGithubRepo || hasTrelloBoard) && hasSonarRepo && hasTrelloBoard) &&
-          <IconButton aria-label="Add Repository" onClick={showAddRepoDialog}>
-            <AddIcon/>
-          </IconButton>
-          }
+            {hasTrelloBoard &&
+              <IconButton aria-label="Trello" onClick={goToTrelloBoard}>
+                <DashboardIcon />
+              </IconButton>
+            }
 
-        </CardActions>
+            {!((hasGithubRepo || hasTrelloBoard) && hasSonarRepo && hasTrelloBoard) &&
+              <IconButton aria-label="Add Repository" onClick={showAddRepoDialog}>
+                <AddIcon />
+              </IconButton>
+            }
+
+          </CardActions>
         }
       </Box>
       <AddRepositoryDialog
@@ -193,4 +256,4 @@ function ProjectAvatar(props) {
   )
 }
 
-export default connect(null, {setCurrentProjectId})(ProjectAvatar);
+export default connect(null, { setCurrentProjectId })(ProjectAvatar);

@@ -148,11 +148,13 @@ function DashboardPage() {
       </Backdrop>
       <div>
         <header className={classes.header}>
-          <ProjectAvatar
-            size="small"
-            project={currentProject}
-            className={classes.avatar}
-          />
+          {currentProject.avatarURL !== undefined &&
+            <ProjectAvatar
+              size="small"
+              project={currentProject}
+              className={classes.avatar}
+            />
+          }
           <h2 className={classes.title}>{currentProject ? currentProject.projectName : ""}</h2>
         </header>
 
