@@ -24,11 +24,7 @@ export default function AddProjectDialog({ open, reloadProjects, handleClose }) 
 
     const payload = {
       memberId,
-      projectName,
-      githubRepositoryURL: "",
-      gitLabRepositoryURL: "",
-      sonarRepositoryURL: "",
-      trelloBoardURL: ""
+      projectName
     }
 
     const config = {
