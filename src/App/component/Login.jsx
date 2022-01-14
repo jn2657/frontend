@@ -6,7 +6,7 @@ import {useHistory} from 'react-router-dom'
 import './Login.css'
 import {Backdrop, Button, CircularProgress, TextField} from '@material-ui/core'
 
-const passwordRegex = new RegExp("^(?=.*?[0-9])(?=.*?[A-Za-z])(?=.*?[`!@#$%^&*()_+-=[\\]{};'\":\\|,.<>/?~]).{8,}$")
+const passwordRegex = new RegExp("^(?=.*?[0-9])(?=.*[a-z])(?=.*[A-Z])(?=(?=.*?[`!@#$%^&*()_+-])|(?=.*?[=[\\]{};'\":|,.<>/?~])).{8,}$")
 
 export default function Login() {
 
@@ -100,9 +100,7 @@ export default function Login() {
 
     try {
       const {data} = await Axios.post(`http://localhost:9100/pvs-api/auth/register`, payload)
-      data?.toString() === 'true' ?
-        setAccountOperationHint("registerSuccess") :
-        setAccountOperationHint("registerFailed")
+      setAccountOperationHint(data?.toString())
     } catch (e) {
       alert(e.response?.status)
       console.error(e)
@@ -145,15 +143,19 @@ export default function Login() {
       </Backdrop>
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo"/>
+        {accountOperationHint === "InvalidPassword" &&
+          <p className={classes.accountOperationHint}>Invalid password</p>
+        }
         {accountOperationHint === "InvalidAccount" &&
           <p className={classes.accountOperationHint}>Invalid username or password</p>
         }
-        {accountOperationHint === "registerSuccess" &&
+        {accountOperationHint === "RegisterSuccess" &&
           <p className={classes.accountOperationHintSuccess}>Account is registered successfully</p>
         }
-        {accountOperationHint === "registerFailed" &&
+        {accountOperationHint === "RegisterFailed" &&
           <p className={classes.accountOperationHint}>Account already exists</p>
         }
+        
         <TextField
           id="username"
           label="Username"
